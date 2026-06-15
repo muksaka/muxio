@@ -160,36 +160,44 @@
 
   /* CARDS */
   .card {
-    flex-shrink:0; width:160px; cursor:pointer; transition:transform 0.2s;
+    flex-shrink:0; width:160px; cursor:pointer; transition:transform 0.25s;
     position:relative;
   }
-  .card:hover { transform:translateY(-6px); }
+  .card:hover { transform:translateY(-6px) scale(1.02); }
   .card-img {
     width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:var(--radius);
     background:var(--surface2); display:block;
     box-shadow:0 4px 16px rgba(0,0,0,0.4);
+    transition:box-shadow 0.25s;
   }
+  .card:hover .card-img { box-shadow:0 12px 32px rgba(0,0,0,0.6); }
   .card:hover .card-overlay { opacity:1; }
+  .card:hover .card-info { opacity:0; }
   .card-overlay {
     position:absolute; inset:0; border-radius:var(--radius);
-    background:linear-gradient(0deg,rgba(8,9,26,0.95) 0%,rgba(8,9,26,0.2) 60%,transparent 100%);
-    opacity:0; transition:opacity 0.2s;
-    display:flex; flex-direction:column; justify-content:flex-end; padding:10px;
+    background:linear-gradient(0deg,rgba(8,9,26,0.97) 0%,rgba(8,9,26,0.5) 50%,rgba(8,9,26,0.1) 100%);
+    opacity:0; transition:opacity 0.25s;
+    display:flex; flex-direction:column; justify-content:flex-end; padding:12px;
   }
   .card-play-btn {
-    width:36px; height:36px; background:var(--gold); border-radius:50%;
-    display:flex; align-items:center; justify-content:center; margin-bottom:8px;
-    font-size:14px; color:#000;
+    width:40px; height:40px; background:var(--gold); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; margin-bottom:10px;
+    font-size:15px; color:#000; box-shadow:0 4px 16px rgba(245,166,35,0.4);
+    flex-shrink:0;
   }
-  .card-label { font-size:12px; font-weight:600; color:var(--text); line-height:1.3; }
-  .card-meta { font-size:11px; color:var(--muted); margin-top:2px; }
-  .card-info { padding:8px 2px 0; }
+  .card-label { font-size:12px; font-weight:600; color:var(--text); line-height:1.35; }
+  .card-meta { font-size:11px; color:rgba(232,234,255,0.6); margin-top:3px; }
+  .card-info {
+    padding:8px 2px 0;
+    transition:opacity 0.2s;
+  }
   .card-title { font-size:13px; font-weight:500; line-height:1.3; }
   .card-year { font-size:12px; color:var(--muted); margin-top:2px; }
   .card-rating { font-size:11px; color:var(--gold); margin-top:2px; }
   .card-progress {
     position:absolute; bottom:0; left:0; right:0; height:3px;
     background:rgba(255,255,255,0.1); border-radius:0 0 var(--radius) var(--radius);
+    overflow:hidden;
   }
   .card-progress-bar { height:100%; background:var(--gold); border-radius:inherit; }
 
@@ -345,27 +353,27 @@
   #toast.show { transform:translateX(-50%) translateY(0); }
   #toast .toast-icon { font-size:16px; }
 
-  /* RECENT CARD */
-  .recent-card {
+  /* CONTINUE WATCHING */
+  .continue-card {
     flex-shrink:0; width:240px; cursor:pointer; background:var(--surface2);
     border-radius:var(--radius); overflow:hidden; border:1px solid var(--surface3);
     transition:all 0.2s; position:relative;
   }
-  .recent-card:hover { border-color:var(--gold); transform:translateY(-4px); }
-  .recent-img { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--surface3); }
-  .recent-info { padding:10px 12px 12px; }
-  .recent-title { font-size:13px; font-weight:600; }
-  .recent-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-  .recent-bar { height:3px; background:var(--surface3); margin-top:8px; border-radius:2px; }
-  .recent-fill { height:100%; background:var(--gold); border-radius:2px; }
-  .recent-pct { font-size:11px; color:var(--muted); margin-top:4px; }
-  .recent-remove {
+  .continue-card:hover { border-color:var(--gold); transform:translateY(-4px); }
+  .continue-img { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--surface3); }
+  .continue-info { padding:10px 12px 12px; }
+  .continue-title { font-size:13px; font-weight:600; }
+  .continue-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+  .continue-bar { height:3px; background:var(--surface3); margin-top:8px; border-radius:2px; }
+  .continue-fill { height:100%; background:var(--gold); border-radius:2px; }
+  .continue-pct { font-size:11px; color:var(--muted); margin-top:4px; }
+  .continue-remove {
     position:absolute; top:6px; right:6px; width:22px; height:22px;
     background:rgba(8,9,26,0.8); border:none; border-radius:50%; cursor:pointer;
     color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:center;
-    opacity:0; transition:opacity 0.2s; z-index:5;
+    opacity:0; transition:opacity 0.2s;
   }
-  .recent-card:hover .recent-remove { opacity:1; }
+  .continue-card:hover .continue-remove { opacity:1; }
 
   /* WATCHLIST */
   .watchlist-grid {
@@ -440,10 +448,10 @@
   }
   .iframe-notice strong { color:var(--gold); }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+<!-- NAV -->
 <nav id="nav">
   <a class="logo" href="#"><span>Mux</span>IO</a>
   <div class="nav-links">
@@ -462,7 +470,9 @@
   </div>
 </nav>
 
+<!-- HOME PAGE -->
 <div id="home-page" class="page active">
+  <!-- HERO -->
   <div id="hero">
     <div id="hero-bg"></div>
     <div class="hero-content" id="hero-content">
@@ -477,13 +487,15 @@
     </div>
   </div>
 
-  <div id="recent-section" class="section" style="display:none">
+  <!-- CONTINUE WATCHING -->
+  <div id="continue-section" class="section" style="display:none">
     <div class="section-header">
-      <div class="section-title">Recently <span>Watched</span></div>
+      <div class="section-title">Continue <span>Watching</span></div>
     </div>
-    <div class="carousel" id="recent-carousel"></div>
+    <div class="carousel" id="continue-carousel"></div>
   </div>
 
+  <!-- TRENDING -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Trending <span>Movies</span></div>
@@ -492,6 +504,7 @@
     <div class="carousel" id="trending-movies"></div>
   </div>
 
+  <!-- POPULAR SERIES -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Popular <span>Series</span></div>
@@ -500,6 +513,7 @@
     <div class="carousel" id="popular-series"></div>
   </div>
 
+  <!-- TOP RATED -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Top <span>Rated</span></div>
@@ -507,6 +521,7 @@
     <div class="carousel" id="top-rated"></div>
   </div>
 
+  <!-- NEW RELEASES -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">New <span>Releases</span></div>
@@ -515,18 +530,21 @@
   </div>
 </div>
 
+<!-- MOVIES PAGE -->
 <div id="movies-page" class="page">
   <div class="genres" id="movie-genres"></div>
   <div class="results-grid" id="movies-grid"></div>
   <div class="loader" id="movies-loader"><div class="spinner"></div></div>
 </div>
 
+<!-- SERIES PAGE -->
 <div id="series-page" class="page">
   <div class="genres" id="series-genres"></div>
   <div class="results-grid" id="series-grid"></div>
   <div class="loader" id="series-loader"><div class="spinner"></div></div>
 </div>
 
+<!-- SEARCH PAGE -->
 <div id="search-page" class="page">
   <div class="type-tabs">
     <button class="type-tab active" onclick="setSearchType('multi')">All</button>
@@ -538,6 +556,7 @@
   <div class="loader" id="search-loader" style="display:none"><div class="spinner"></div></div>
 </div>
 
+<!-- WATCHLIST PAGE -->
 <div id="watchlist-page" class="page">
   <div class="section-header" style="padding:32px 48px 0">
     <div class="section-title">My <span>Watchlist</span></div>
@@ -545,6 +564,7 @@
   <div class="watchlist-grid" id="watchlist-grid"></div>
 </div>
 
+<!-- PLAYER PAGE -->
 <div id="player-page" class="page">
   <div class="player-wrapper">
     <div class="player-title-bar">
@@ -553,7 +573,7 @@
       <div class="player-subheading" id="player-subheading"></div>
     </div>
     <div class="iframe-container">
-      <iframe id="player-iframe" allow="fullscreen" referrerpolicy="no-referrer"></iframe>
+      <iframe id="player-iframe" allowfullscreen allow="fullscreen" referrerpolicy="no-referrer"></iframe>
     </div>
     <div class="iframe-notice">
       <strong>Note:</strong> If a source doesn't load, try switching to another below. Some sources may require disabling your ad blocker.
@@ -582,6 +602,7 @@
   </div>
 </div>
 
+<!-- PROFILE PAGE -->
 <div id="profile-page" class="page">
   <div class="profile-header">
     <div class="profile-avatar" id="profile-avatar"></div>
@@ -602,6 +623,7 @@
   </div>
 </div>
 
+<!-- AUTH MODALS -->
 <div class="modal-overlay hidden" id="auth-modal">
   <div class="modal" id="auth-modal-content">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -609,7 +631,7 @@
       <h2>Welcome <span style="color:var(--gold)">Back</span></h2>
       <p>Sign in to sync your watchlist and progress.</p>
       <div class="form-group">
-        <label>Email Address</label>
+        <label>Username or Email</label>
         <input class="form-input" id="login-user" type="text" placeholder="your@email.com">
       </div>
       <div class="form-group">
@@ -631,7 +653,7 @@
         <input class="form-input" id="reg-user" type="text" placeholder="cooluser123">
       </div>
       <div class="form-group">
-        <label>Email Address</label>
+        <label>Email</label>
         <input class="form-input" id="reg-email" type="email" placeholder="your@email.com">
       </div>
       <div class="form-group">
@@ -648,32 +670,29 @@
   </div>
 </div>
 
+<!-- TOAST -->
 <div id="toast"><span class="toast-icon" id="toast-icon">✅</span> <span id="toast-msg"></span></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ===================== CONFIG =====================
 const TMDB_BEARER = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzYzMwZjRiMThjZTc0ODlmMzgzNDE2YzEwMmI0MjgwMyIsIm5iZiI6MTc4MDk0NzE2MS4wMTIsInN1YiI6IjZhMjcxOGQ5NzUwMTQ4Y2IxZWMzMzQ1YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.2rw1VFYZHjDv8e7STG_HOBxqtYT6vTxmY5WvvoBebwY';
 const TMDB = 'https://api.themoviedb.org/3';
 const IMG = 'https://image.tmdb.org/t/p';
+const SB_URL = 'https://rxaykpiqmvwnoyrfoxmh.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4YXlrcGlxbXZ3bm95cmZveG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTE5ODQsImV4cCI6MjA5NzAyNzk4NH0.WAnqt0FUzSX02t5rwJFzgOC1u2ALIaNanUZIVJ0H7sA';
+const sb = supabase.createClient(SB_URL, SB_KEY);
 const SOURCES = [
-  { name: 'VidCore', movie: (id) => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` },
-  { name: 'VidKing', movie: (id) => `https://vidking.net/embed/movie/${id}`, tv: (id,s,e) => `https://vidking.net/embed/tv/${id}/${s}/${e}` },
   { name: 'VidSrc', movie: (id) => `https://vidsrc.to/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-  { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
-  
-  // FIXED VidCore: using the correct URLs per instructions (without /embed)
-  
+  { name: 'VidSrc Pro', movie: (id) => `https://vidsrc.pro/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
+  { name: 'SuperEmbed', movie: (id) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`, tv: (id,s,e) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+  { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
 ];
 
-// ===================== SUPABASE INITIALIZATION =====================
-const SUPABASE_URL = "https://rxaykpiqmvwnoyrfoxmh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4YXlrcGlxbXZ3bm95cmZveG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTE5ODQsImV4cCI6MjA5NzAyNzk4NH0.WAnqt0FUzSX02t5rwJFzgOC1u2ALIaNanUZIVJ0H7sA";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 // ===================== STATE =====================
-let currentUser = null; 
-let currentUserEmail = null;
-let db = { progress: {}, watchlist: [] }; 
+let currentUser = null;      // { id, email, username }
+let localProgress = {};      // cache: tmdb_id -> row
+let localWatchlist = [];     // cache: array of rows
 let currentItem = null;
 let currentSeason = 1;
 let currentEpisode = 1;
@@ -685,146 +704,101 @@ let prevPage = 'home';
 let progressInterval = null;
 let playerStartTime = null;
 
-// ===================== INITIAL SYNC AND LOAD =====================
-async function loadDB() {
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session && session.user) {
-      currentUser = session.user.user_metadata.username || session.user.email.split('@')[0];
-      currentUserEmail = session.user.email;
-      updateNav();
-      await fetchUserDataCloud();
-    }
-  } catch(e) {
-    console.warn("Supabase auth failed:", e);
-  }
-}
-
-async function fetchUserDataCloud() {
-  try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return;
-    
-    db.progress = user.user_metadata.progress || {};
-    db.watchlist = user.user_metadata.watchlist || [];
-    renderRecentlyWatched();
-  } catch(e) {
-    console.error("Error retrieving user data from database:", e);
-  }
-}
-
-async function saveDBCloud() {
-  if (!currentUser) return;
-  try {
-    await supabaseClient.auth.updateUser({
-      data: {
-        progress: db.progress,
-        watchlist: db.watchlist
-      }
-    });
-  } catch(e) {
-    console.error("Cloud synchronisation failed:", e);
-  }
-}
-
 // ===================== AUTH =====================
 async function doRegister() {
   const u = document.getElementById('reg-user').value.trim();
   const e = document.getElementById('reg-email').value.trim();
   const p = document.getElementById('reg-pass').value;
   const err = document.getElementById('reg-error');
-  
   if (!u || !e || !p) { err.textContent = 'Please fill all fields.'; return; }
   if (p.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-  
-  err.textContent = "Creating profile...";
-  
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: e,
-    password: p,
-    options: {
-      data: {
-        username: u,
-        progress: {},
-        watchlist: []
-      }
-    }
+
+  const btn = document.querySelector('#register-form .btn-gold');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+
+  const { data, error } = await sb.auth.signUp({
+    email: e, password: p,
+    options: { data: { username: u } }
   });
+  btn.textContent = 'Create Account'; btn.disabled = false;
 
-  if (error) {
-    err.textContent = error.message;
-    return;
+  if (error) { err.textContent = error.message; return; }
+  // Session may need email confirm — handle both cases
+  if (data.session) {
+    await onSignIn(data.session.user);
+    closeModal();
+    toast('Account created! Welcome, ' + u + ' 🎉');
+  } else {
+    closeModal();
+    toast('Check your email to confirm your account, then sign in.', 'info', 6000);
   }
-
-  currentUser = u;
-  currentUserEmail = e;
-  db.progress = {};
-  db.watchlist = [];
-  
-  updateNav();
-  closeModal();
-  toast('Account created! Welcome, ' + u + ' 🎉');
 }
 
 async function doLogin() {
   const e = document.getElementById('login-user').value.trim();
   const p = document.getElementById('login-pass').value;
   const err = document.getElementById('login-error');
-  
-  if (!e || !p) { err.textContent = 'Please provide both credentials.'; return; }
-  err.textContent = "Signing in...";
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: e,
-    password: p
-  });
+  const btn = document.querySelector('#login-form .btn-gold');
+  btn.textContent = 'Signing in...'; btn.disabled = true;
 
-  if (error) {
-    err.textContent = error.message;
-    return;
-  }
+  const { data, error } = await sb.auth.signInWithPassword({ email: e, password: p });
+  btn.textContent = 'Sign In'; btn.disabled = false;
 
-  currentUser = data.user.user_metadata.username || data.user.email.split('@')[0];
-  currentUserEmail = data.user.email;
-  
-  updateNav();
+  if (error) { err.textContent = error.message; return; }
+  await onSignIn(data.user);
   closeModal();
-  toast('Welcome back, ' + currentUser + '! 👋');
-  await fetchUserDataCloud();
+  toast('Welcome back, ' + (currentUser.username || e) + '! 👋');
+}
+
+async function onSignIn(user) {
+  // Fetch profile for username
+  const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
+  currentUser = { id: user.id, email: user.email, username: profile?.username || user.email.split('@')[0] };
+  await loadCloudData();
+  updateNav();
+  renderContinueWatching();
 }
 
 async function logout() {
   stopProgressTracking();
-  await supabaseClient.auth.signOut();
+  await sb.auth.signOut();
   currentUser = null;
-  currentUserEmail = null;
-  db.progress = {};
-  db.watchlist = [];
+  localProgress = {};
+  localWatchlist = [];
   updateNav();
   showPage('home');
   toast('Signed out. See you next time!');
 }
 
+async function loadCloudData() {
+  if (!currentUser) return;
+  const [{ data: prog }, { data: wl }] = await Promise.all([
+    sb.from('progress').select('*').eq('user_id', currentUser.id),
+    sb.from('watchlist').select('*').eq('user_id', currentUser.id)
+  ]);
+  localProgress = {};
+  (prog || []).forEach(r => { localProgress[`${r.media_type}_${r.tmdb_id}`] = r; });
+  localWatchlist = wl || [];
+}
+
 function updateNav() {
   const nr = document.getElementById('nav-right');
   if (currentUser) {
-    nr.innerHTML = `<div class="avatar" onclick="toggleAvatarMenu()">${currentUser[0].toUpperCase()}
+    const initial = (currentUser.username || '?')[0].toUpperCase();
+    nr.innerHTML = `<div class="avatar" onclick="toggleAvatarMenu()">${initial}
       <div class="avatar-menu" id="avatar-menu">
         <div class="avatar-item" onclick="showPage('profile')">👤 Profile</div>
         <div class="avatar-item" onclick="showPage('watchlist')">🔖 Watchlist</div>
         <div class="avatar-item danger" onclick="logout()">🚪 Sign Out</div>
       </div></div>`;
-    document.querySelector('.nav-link[onclick*="watchlist"]') && (document.querySelector('.nav-link[onclick*="watchlist"]').style.display='');
-    renderRecentlyWatched();
+    renderContinueWatching();
   } else {
     nr.innerHTML = `<button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
       <button class="btn btn-gold" onclick="openModal('register')">Sign Up</button>`;
   }
 }
-
-function toggleAvatarMenu() {
-  document.getElementById('avatar-menu')?.classList.toggle('open');
-}
+function toggleAvatarMenu() { document.getElementById('avatar-menu')?.classList.toggle('open'); }
 document.addEventListener('click', e => {
   if (!e.target.closest('.avatar')) document.getElementById('avatar-menu')?.classList.remove('open');
 });
@@ -835,20 +809,8 @@ function startProgressTracking(item, s, ep) {
   playerStartTime = Date.now();
   if (!currentUser) return;
   document.getElementById('progress-note').style.display = 'flex';
-  
-  const key = `${item.media_type||'movie'}_${item.id}`;
-  if (!db.progress) db.progress = {};
-  if (!db.progress[key]) {
-    db.progress[key] = { item, season: s, episode: ep, progress: 0, updatedAt: Date.now() };
-    saveDBCloud().then(() => { renderRecentlyWatched(); });
-  } else {
-    db.progress[key].updatedAt = Date.now();
-    saveDBCloud().then(() => { renderRecentlyWatched(); });
-  }
-
   progressInterval = setInterval(() => saveProgress(item, s, ep), 3 * 60 * 1000);
 }
-
 function stopProgressTracking() {
   if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
   if (currentItem && currentUser && playerStartTime) {
@@ -856,70 +818,79 @@ function stopProgressTracking() {
   }
   playerStartTime = null;
 }
-
 async function saveProgress(item, s, ep) {
   if (!currentUser || !item) return;
   const key = `${item.media_type||'movie'}_${item.id}`;
-  if (!db.progress) db.progress = {};
-  const existing = db.progress[key] || {};
+  const existing = localProgress[key];
   const watchedMs = Date.now() - (playerStartTime || Date.now());
-  
-  db.progress[key] = {
-    ...existing, item, season: s, episode: ep,
-    progress: Math.min((existing.progress || 0) + (watchedMs / (90 * 60 * 1000)) * 100, 100),
-    updatedAt: Date.now()
+  const newPct = Math.min((existing?.progress_pct || 0) + (watchedMs / (90 * 60 * 1000)) * 100, 99);
+
+  const row = {
+    user_id: currentUser.id,
+    media_type: item.media_type || 'movie',
+    tmdb_id: item.id,
+    item_data: item,
+    season: s,
+    episode: ep,
+    progress_pct: newPct,
+    updated_at: new Date().toISOString()
   };
-  
-  await saveDBCloud();
+  localProgress[key] = { ...row };
+
+  await sb.from('progress').upsert(row, { onConflict: 'user_id,media_type,tmdb_id' });
   toast('Progress saved ✅', 'success', 1500);
   playerStartTime = Date.now();
-  renderRecentlyWatched();
 }
-
 function getProgress(item) {
-  if (!currentUser || !db.progress || !item) return null;
+  if (!currentUser || !item) return null;
   const key = `${item.media_type||'movie'}_${item.id}`;
-  return db.progress[key] || null;
+  const r = localProgress[key];
+  if (!r) return null;
+  return { progress: r.progress_pct, season: r.season, episode: r.episode, updatedAt: new Date(r.updated_at).getTime(), item: r.item_data };
 }
 
 // ===================== WATCHLIST =====================
 function isInWatchlist(id) {
-  if (!currentUser || !db.watchlist) return false;
-  return (db.watchlist || []).some(x => x.id === id);
+  return localWatchlist.some(x => x.tmdb_id === id);
 }
-
 async function toggleWatchlist(item, btn) {
   if (!currentUser) { openModal('login'); return; }
-  if (!db.watchlist) db.watchlist = [];
-  const idx = db.watchlist.findIndex(x => x.id === item.id);
-  
+  const idx = localWatchlist.findIndex(x => x.tmdb_id === item.id);
   if (idx > -1) {
-    db.watchlist.splice(idx, 1);
+    const row = localWatchlist[idx];
+    localWatchlist.splice(idx, 1);
     if (btn) btn.textContent = '+ Watchlist';
+    await sb.from('watchlist').delete().eq('id', row.id);
     toast('Removed from watchlist');
   } else {
-    db.watchlist.push(item);
+    const row = { user_id: currentUser.id, tmdb_id: item.id, media_type: item.media_type||'movie', item_data: item };
+    const { data } = await sb.from('watchlist').insert(row).select().single();
+    if (data) localWatchlist.push(data);
     if (btn) btn.textContent = '✓ In Watchlist';
     toast('Added to watchlist 🔖');
   }
-  await saveDBCloud();
 }
 
 // ===================== TMDB API =====================
 async function tmdb(path, params = {}) {
+  const url = new URL(`${TMDB}${path}`);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
   try {
-    const url = new URL(`${TMDB}${path}`);
-    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-    const r = await fetch(url, {
+    const r = await fetch(url.href, {
+      signal: controller.signal,
       headers: {
         'Authorization': `Bearer ${TMDB_BEARER}`,
         'Content-Type': 'application/json'
       }
     });
+    clearTimeout(timeout);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return r.json();
-  } catch (e) {
-    console.error(`TMDB fetch failed for ${path}:`, e);
+  } catch(e) {
+    clearTimeout(timeout);
+    console.warn(`TMDB ${path} failed:`, e.message);
     return null;
   }
 }
@@ -941,7 +912,15 @@ function showPage(name) {
 }
 
 // ===================== HOME =====================
-async function loadHome() {
+let homeLoaded = false;
+let loadingHome = false;
+async function loadHome(force = false) {
+  if (loadingHome) return;          // already in-flight, don't double-fire
+  if (homeLoaded && !force) {       // already loaded, just refresh continue-watching
+    renderContinueWatching();
+    return;
+  }
+  loadingHome = true;
   try {
     const [trending, topRated, nowPlaying, popularTV] = await Promise.all([
       tmdb('/trending/movie/week'),
@@ -949,32 +928,24 @@ async function loadHome() {
       tmdb('/movie/now_playing'),
       tmdb('/tv/popular'),
     ]);
-    if (trending?.results?.length) {
-      heroItem = trending.results[0];
-      renderHero(heroItem);
-      renderCarousel('trending-movies', trending.results.slice(0,15), 'movie');
-      renderCarousel('top-rated', topRated?.results?.slice(0,15) || [], 'movie');
-      renderCarousel('new-releases', nowPlaying?.results?.slice(0,15) || [], 'movie');
-      renderCarousel('popular-series', popularTV?.results?.slice(0,15) || [], 'tv');
-    } else {
-      throw new Error("No trending data");
-    }
-  } catch (err) {
-    console.warn("TMDB failed, using fallback data");
-    const mockTrending = [
-      { id: 693134, title: "Dune: Part Two", media_type: "movie", backdrop_path: "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg", overview: "Paul Atreides unites with Chani and the Fremen while seeking revenge...", vote_average: 8.7, release_date: "2024-03-01" },
-      { id: 1011985, title: "Furiosa: A Mad Max Saga", media_type: "movie", backdrop_path: "/iXU7X8t4p4q4oq4oq4oq.jpg", overview: "The origin story of renegade warrior Furiosa.", vote_average: 8.2, release_date: "2024-05-24" }
-    ];
-    
-    heroItem = mockTrending[0];
-    renderHero(heroItem);
-    renderCarousel('trending-movies', mockTrending, 'movie');
-    renderCarousel('top-rated', mockTrending, 'movie');
-    renderCarousel('new-releases', mockTrending, 'movie');
-    renderCarousel('popular-series', [{id: 1396, name: "Breaking Bad", media_type:"tv", backdrop_path: "/ggFHVu59p3cA3T8I3P0e5z2yA4k.jpg", vote_average:9.5, first_air_date:"2008-01-20"}], 'tv');
-  }
 
-  renderRecentlyWatched();
+    if (!trending?.results?.length) throw new Error('No results from TMDB');
+
+    heroItem = trending.results[0];
+    renderHero(heroItem);
+    renderCarousel('trending-movies', trending.results.slice(0,15), 'movie');
+    renderCarousel('top-rated', topRated?.results?.slice(0,15) || [], 'movie');
+    renderCarousel('new-releases', nowPlaying?.results?.slice(0,15) || [], 'movie');
+    renderCarousel('popular-series', popularTV?.results?.slice(0,15) || [], 'tv');
+    homeLoaded = true;
+  } catch(e) {
+    console.error('loadHome failed:', e);
+    document.getElementById('hero-title').textContent = 'Could not load content';
+    document.getElementById('hero-desc').textContent = 'Check your connection and refresh the page.';
+  } finally {
+    loadingHome = false;
+    renderContinueWatching();
+  }
 }
 
 function renderHero(item) {
@@ -1004,7 +975,6 @@ function viewHeroDetails() {
 // ===================== CAROUSELS =====================
 function renderCarousel(id, items, type) {
   const el = document.getElementById(id);
-  if (!el || !items) return;
   el.innerHTML = items.map(item => cardHTML({ ...item, media_type: type })).join('');
 }
 
@@ -1030,35 +1000,32 @@ function cardHTML(item) {
   </div>`;
 }
 
-// ===================== RECENTLY WATCHED =====================
-function renderRecentlyWatched() {
-  const section = document.getElementById('recent-section');
-  const container = document.getElementById('recent-carousel');
-  if (!currentUser || !db.progress) { if(section) section.style.display='none'; return; }
-  
-  const items = Object.values(db.progress)
-    .filter(x => x)
-    .sort((a,b) => b.updatedAt - a.updatedAt).slice(0,12);
-    
-  if (!items.length) { if(section) section.style.display='none'; return; }
+// ===================== CONTINUE WATCHING =====================
+function renderContinueWatching() {
+  const section = document.getElementById('continue-section');
+  const container = document.getElementById('continue-carousel');
+  if (!currentUser) { section.style.display='none'; return; }
+  const items = Object.values(localProgress)
+    .filter(r => r.progress_pct > 0 && r.progress_pct < 95)
+    .sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0,10);
+  if (!items.length) { section.style.display='none'; return; }
   section.style.display='';
-  container.innerHTML = items.map(p => {
-    const item = p.item;
+  container.innerHTML = items.map(r => {
+    const item = r.item_data;
     const title = item.title || item.name;
     const backdrop = item.backdrop_path ? `${IMG}/w500${item.backdrop_path}` : '';
-    const sub = item.media_type==='tv' ? `S${p.season}E${p.episode}` : 'Movie';
+    const sub = r.media_type==='tv' ? `S${r.season}E${r.episode}` : 'Movie';
+    const pct = Math.round(r.progress_pct);
+    const key = `${r.media_type}_${r.tmdb_id}`;
     const itemJSON = JSON.stringify(item).replace(/"/g,'&quot;');
-    const isFinished = p.progress >= 95;
-    
-    return `<div class="recent-card">
-      <img class="recent-img" src="${backdrop}" alt="${title}" onerror="this.style.background='var(--surface3)'">
-      <button class="recent-remove" onclick="removeProgress(event,'${item.media_type}_${item.id}')">✕</button>
-      <div class="recent-info" onclick="openPlayer(${itemJSON})">
-        <div class="recent-title">${title}</div>
-        <div class="recent-sub" style="color: ${isFinished ? 'var(--success)' : 'var(--muted)'}">
-          ${isFinished ? '✅ Finished' : `Last watched ${sub}`}
-        </div>
-        <div class="recent-bar"><div class="recent-fill" style="width:${Math.round(p.progress)}%; background:${isFinished ? 'var(--success)':'var(--gold)'}"></div></div>
+    return `<div class="continue-card">
+      <img class="continue-img" src="${backdrop}" alt="${title}" onerror="this.style.background='var(--surface3)'">
+      <button class="continue-remove" onclick="removeProgress(event,'${key}')">✕</button>
+      <div class="continue-info" onclick="openPlayer(${itemJSON})">
+        <div class="continue-title">${title}</div>
+        <div class="continue-sub">${sub}</div>
+        <div class="continue-bar"><div class="continue-fill" style="width:${pct}%"></div></div>
+        <div class="continue-pct">${pct}% watched</div>
       </div>
     </div>`;
   }).join('');
@@ -1066,11 +1033,13 @@ function renderRecentlyWatched() {
 
 async function removeProgress(e, key) {
   e.stopPropagation();
-  if (!currentUser || !db.progress) return;
-  delete db.progress[key];
-  await saveDBCloud();
-  renderRecentlyWatched();
-  toast('Removed from history');
+  if (!currentUser) return;
+  const r = localProgress[key];
+  if (!r) return;
+  delete localProgress[key];
+  renderContinueWatching();
+  await sb.from('progress').delete().eq('user_id', currentUser.id).eq('media_type', r.media_type).eq('tmdb_id', r.tmdb_id);
+  toast('Removed from continue watching');
 }
 
 // ===================== MOVIES PAGE =====================
@@ -1090,7 +1059,7 @@ async function loadMovies(reset=true) {
     document.getElementById('movies-grid').innerHTML = '';
   }
   const genres = document.getElementById('movie-genres');
-  if (reset && genres) {
+  if (reset) {
     genres.innerHTML = `<div class="genre-pill active" onclick="filterMovies(0,this)">All</div>` +
       MOVIE_GENRES.map(g => `<div class="genre-pill" onclick="filterMovies(${g.id},this)">${g.name}</div>`).join('');
   }
@@ -1099,10 +1068,8 @@ async function loadMovies(reset=true) {
   if (movieGenre) params.with_genres = movieGenre;
   const data = await tmdb('/discover/movie', params);
   const grid = document.getElementById('movies-grid');
-  if (grid && data && data.results) {
-    grid.innerHTML += data.results.map(item => cardHTML({...item,media_type:'movie'})).join('');
-    document.getElementById('movies-loader').style.display = moviePage >= data.total_pages ? 'none' : '';
-  }
+  grid.innerHTML += data.results.map(item => cardHTML({...item,media_type:'movie'})).join('');
+  document.getElementById('movies-loader').style.display = moviePage >= data.total_pages ? 'none' : '';
   loadingMovies = false;
 }
 function filterMovies(id, el) {
@@ -1127,7 +1094,7 @@ async function loadSeries(reset=true) {
     document.getElementById('series-grid').innerHTML = '';
   }
   const genres = document.getElementById('series-genres');
-  if (reset && genres) {
+  if (reset) {
     genres.innerHTML = `<div class="genre-pill active" onclick="filterSeries(0,this)">All</div>` +
       TV_GENRES.map(g => `<div class="genre-pill" onclick="filterSeries(${g.id},this)">${g.name}</div>`).join('');
   }
@@ -1136,10 +1103,8 @@ async function loadSeries(reset=true) {
   if (seriesGenre) params.with_genres = seriesGenre;
   const data = await tmdb('/discover/tv', params);
   const grid = document.getElementById('series-grid');
-  if (grid && data && data.results) {
-    grid.innerHTML += data.results.map(item => cardHTML({...item,media_type:'tv'})).join('');
-    document.getElementById('series-loader').style.display = seriesPage >= data.total_pages ? 'none' : '';
-  }
+  grid.innerHTML += data.results.map(item => cardHTML({...item,media_type:'tv'})).join('');
+  document.getElementById('series-loader').style.display = seriesPage >= data.total_pages ? 'none' : '';
   loadingSeries = false;
 }
 function filterSeries(id, el) {
@@ -1171,8 +1136,8 @@ async function doSearch() {
   document.getElementById('search-loader').style.display = '';
   const data = await tmdb(`/search/${searchType}`, { query: q, include_adult: false });
   document.getElementById('search-loader').style.display = 'none';
-  document.getElementById('search-meta').textContent = `${data?.total_results || 0} results for "${q}"`;
-  const results = (data?.results || []).filter(x => x.poster_path || x.backdrop_path);
+  document.getElementById('search-meta').textContent = `${data.total_results || 0} results for "${q}"`;
+  const results = (data.results || []).filter(x => x.poster_path || x.backdrop_path);
   document.getElementById('search-results').innerHTML = results.map(item => {
     const type = item.media_type || (searchType === 'multi' ? (item.title ? 'movie' : 'tv') : searchType);
     return cardHTML({...item, media_type: type});
@@ -1200,16 +1165,18 @@ async function openPlayer(item) {
   document.getElementById('player-title').textContent = title;
   document.getElementById('player-overview').textContent = item.overview || '';
 
+  // Fetch details
   const details = await tmdb(`/${type === 'movie' ? 'movie' : 'tv'}/${item.id}`);
   const meta = document.getElementById('player-meta');
-  const year = (details?.release_date || details?.first_air_date || '').split('-')[0];
+  const year = (details.release_date || details.first_air_date || '').split('-')[0];
   meta.innerHTML = `
-    <span class="badge gold">⭐ ${details?.vote_average?.toFixed(1) || 'N/A'}</span>
+    <span class="badge gold">⭐ ${details.vote_average?.toFixed(1) || 'N/A'}</span>
     <span class="badge">${year}</span>
-    ${type === 'movie' && details?.runtime ? `<span class="badge">${Math.floor(details.runtime/60)}h ${details.runtime%60}m</span>` : ''}
-    ${(details?.genres||[]).slice(0,3).map(g=>`<span class="badge">${g.name}</span>`).join('')}
+    ${type === 'movie' && details.runtime ? `<span class="badge">${Math.floor(details.runtime/60)}h ${details.runtime%60}m</span>` : ''}
+    ${(details.genres||[]).slice(0,3).map(g=>`<span class="badge">${g.name}</span>`).join('')}
   `;
 
+  // Check saved progress
   const savedProg = getProgress(item);
   if (type === 'tv') {
     currentSeason = savedProg?.season || 1;
@@ -1222,7 +1189,7 @@ async function openPlayer(item) {
     loadSource(type, item.id, 1, 1);
   }
 
-  if (savedProg && savedProg.progress > 0) toast(`Resuming from where you left off (${Math.round(savedProg.progress)}%)`, 'info');
+  if (savedProg) toast(`Resuming from where you left off (${Math.round(savedProg.progress)}%)`, 'info');
   startProgressTracking(currentItem, currentSeason, currentEpisode);
 }
 
@@ -1249,7 +1216,7 @@ function setSource(idx, type, id, s, e) {
 }
 
 async function loadSeasons(details) {
-  const numSeasons = details?.number_of_seasons || 1;
+  const numSeasons = details.number_of_seasons || 1;
   const sel = document.getElementById('season-selector');
   sel.innerHTML = Array.from({length:numSeasons},(_,i) =>
     `<button class="season-btn ${currentSeason===i+1?'active':''}" onclick="selectSeason(${i+1},${details.id})" id="season-btn-${i+1}">S${i+1}</button>`
@@ -1260,7 +1227,7 @@ async function loadSeasons(details) {
 async function loadEpisodes(seriesId, season) {
   const data = await tmdb(`/tv/${seriesId}/season/${season}`);
   const list = document.getElementById('ep-list');
-  list.innerHTML = (data?.episodes || []).map(ep =>
+  list.innerHTML = (data.episodes || []).map(ep =>
     `<div class="ep-row ${currentEpisode===ep.episode_number&&currentSeason===season?'active':''}" id="ep-row-${ep.episode_number}" onclick="selectEpisode(${ep.episode_number},${seriesId})">
       <div class="ep-num-badge">${ep.episode_number}</div>
       <div>
@@ -1301,12 +1268,11 @@ function loadWatchlist() {
     grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔒</div><div class="empty-title">Sign in required</div><div class="empty-desc">Create an account to save your watchlist and sync across devices.</div><br><button class="btn btn-gold" onclick="openModal('login')">Sign In</button></div>`;
     return;
   }
-  const list = db.watchlist || [];
-  if (!list.length) {
+  if (!localWatchlist.length) {
     grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔖</div><div class="empty-title">Your watchlist is empty</div><div class="empty-desc">Browse movies and series and add them to your watchlist.</div></div>`;
     return;
   }
-  grid.innerHTML = list.map(item => cardHTML(item)).join('');
+  grid.innerHTML = localWatchlist.map(r => cardHTML({ ...r.item_data, media_type: r.media_type })).join('');
 }
 
 // ===================== PROFILE PAGE =====================
@@ -1314,11 +1280,11 @@ function loadProfile() {
   if (!currentUser) { showPage('home'); return; }
   document.getElementById('profile-avatar').textContent = currentUser[0].toUpperCase();
   document.getElementById('profile-name-display').textContent = currentUser;
-  document.getElementById('profile-email-display').textContent = currentUserEmail || '';
+  document.getElementById('profile-email-display').textContent = db.users[currentUser]?.email || '';
 
-  const progress = Object.values(db.progress || {});
-  const watchlist = db.watchlist || [];
-  const watched = progress.filter(p => p && p.progress >= 95).length;
+  const progress = Object.values(db.progress[currentUser] || {});
+  const watchlist = db.watchlist[currentUser] || [];
+  const watched = progress.filter(p => p.progress >= 95).length;
 
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card"><div class="stat-num">${progress.length}</div><div class="stat-label">Titles Started</div></div>
@@ -1327,7 +1293,7 @@ function loadProfile() {
   `;
 
   const cont = document.getElementById('profile-continue');
-  const inProg = progress.filter(p=>p && p.progress>0&&p.progress<95).sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,10);
+  const inProg = progress.filter(p=>p.progress>0&&p.progress<95).sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,10);
   cont.innerHTML = inProg.length ? inProg.map(p=>cardHTML(p.item)).join('') :
     `<div class="empty-state" style="padding:20px"><div class="empty-desc">Nothing in progress yet.</div></div>`;
 
@@ -1358,9 +1324,18 @@ function toast(msg, type='success', dur=3000) {
 }
 
 // ===================== INIT =====================
-loadDB();
-loadHome();
+async function init() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) await onSignIn(session.user);
+  } catch(e) {
+    console.warn('Session restore failed:', e);
+  }
+  loadHome();
+}
+init();
 
+// Save progress on page leave
 window.addEventListener('beforeunload', () => {
   if (currentUser && currentItem && playerStartTime) {
     saveProgress(currentItem, currentSeason, currentEpisode);
