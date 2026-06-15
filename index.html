@@ -51,12 +51,22 @@
     color:var(--muted); font-size:14px; font-weight:500; transition:all 0.2s;
     border:none; background:none;
   }
-  .search-icon img {
-  width: 18px;    
-  height: 18px;   
-  display: block; 
+  .search-icon { 
+  color: var(--muted); 
+  font-size: 16px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* 👈 This makes it so clicks pass directly through to the input */
+  flex-shrink: 0;       /* 👈 Stops the icon wrapper from stretching weirdly */
+}
+
+.search-icon img {
+  width: 16px;          /* Match this to your layout's icon size */
+  height: 16px;
   object-fit: contain;
-  }
+  display: block;
+}
   .nav-link:hover, .nav-link.active { color:var(--text); background:var(--surface2); }
   .nav-link.active { color:var(--gold); }
   .search-bar {
