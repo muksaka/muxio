@@ -684,13 +684,17 @@ const SB_URL = 'https://rxaykpiqmvwnoyrfoxmh.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4YXlrcGlxbXZ3bm95cmZveG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTE5ODQsImV4cCI6MjA5NzAyNzk4NH0.WAnqt0FUzSX02t5rwJFzgOC1u2ALIaNanUZIVJ0H7sA';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 const SOURCES = [
+  { name: 'VidCore', movie: (id) => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` },
+  
+  { name: 'VidKing', movie: (id) => `https://vidking.net/movie/${id}`, tv: (id,s,e) => `https://vidking.net/tv/${id}/${s}/${e}` },
+  
   { name: 'VidSrc', movie: (id) => `https://vidsrc.to/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
   
-  { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+  { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
 
-  { name: 'VidKing', movie: (id) => `https://vidking.net/movie/${id}`, tv: (id,s,e) => `https://vidking.net/tv/${id}/${s}/${e}` },
+  
 
-  { name: 'VidCore', movie: (id) => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` }
+  
 ];
 
 // ===================== STATE =====================
