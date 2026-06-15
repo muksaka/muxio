@@ -685,9 +685,12 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const sb = supabase.createClient(SB_URL, SB_KEY);
 const SOURCES = [
   { name: 'VidSrc', movie: (id) => `https://vidsrc.to/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-  { name: 'VidSrc Pro', movie: (id) => `https://vidsrc.pro/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}` },
-  { name: 'SuperEmbed', movie: (id) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`, tv: (id,s,e) => `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+  
   { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
+
+  { name: 'VidKing', movie: (id) => `https://vidking.net/movie/${id}`, tv: (id,s,e) => `https://vidking.net/tv/${id}/${s}/${e}` },
+
+  { name: 'VidCore', movie: (id) => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` }
 ];
 
 // ===================== STATE =====================
