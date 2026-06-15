@@ -52,21 +52,20 @@
     border:none; background:none;
   }
   .search-icon { 
-  color: var(--muted); 
-  font-size: 16px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; /* 👈 This makes it so clicks pass directly through to the input */
-  flex-shrink: 0;       /* 👈 Stops the icon wrapper from stretching weirdly */
-}
-
-.search-icon img {
-  width: 16px;          /* Match this to your layout's icon size */
-  height: 16px;
-  object-fit: contain;
-  display: block;
-}
+    color: var(--muted); 
+    font-size: 16px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  .search-icon img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    display: block;
+  }
   .nav-link:hover, .nav-link.active { color:var(--text); background:var(--surface2); }
   .nav-link.active { color:var(--gold); }
   .search-bar {
@@ -470,17 +469,17 @@
 
 <!-- NAV -->
 <nav id="nav">
-  <a class="logo" href="#"><span>Mux</span>IO</a>
+  <a class="logo" href="#/home"><span>Mux</span>IO</a>
   <div class="nav-links">
-    <button class="nav-link active" onclick="showPage('home')">Home</button>
-    <button class="nav-link" onclick="showPage('movies')">Movies</button>
-    <button class="nav-link" onclick="showPage('series')">Series</button>
-    <button class="nav-link" onclick="showPage('watchlist')">Watchlist</button>
+    <button class="nav-link active" onclick="navigateTo('home')">Home</button>
+    <button class="nav-link" onclick="navigateTo('movies')">Movies</button>
+    <button class="nav-link" onclick="navigateTo('series')">Series</button>
+    <button class="nav-link" onclick="navigateTo('watchlist')">Watchlist</button>
   </div>
   <div class="search-bar">
-  <span class="search-icon"><img src="search.png" alt="Search"></span>
-  <input id="search-input" type="text" placeholder="Search movies & series..." oninput="handleSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
-</div>
+    <span class="search-icon"><img src="search.png" alt="Search"></span>
+    <input id="search-input" type="text" placeholder="Search movies & series..." oninput="handleSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
+  </div>
   <div class="nav-right" id="nav-right">
     <button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button class="btn btn-gold" onclick="openModal('register')">Sign Up</button>
@@ -489,7 +488,6 @@
 
 <!-- HOME PAGE -->
 <div id="home-page" class="page active">
-  <!-- HERO -->
   <div id="hero">
     <div id="hero-bg"></div>
     <div class="hero-content" id="hero-content">
@@ -504,7 +502,6 @@
     </div>
   </div>
 
-  <!-- CONTINUE WATCHING -->
   <div id="continue-section" class="section" style="display:none">
     <div class="section-header">
       <div class="section-title">Continue <span>Watching</span></div>
@@ -512,25 +509,22 @@
     <div class="carousel" id="continue-carousel"></div>
   </div>
 
-  <!-- TRENDING -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Trending <span>Movies</span></div>
-      <span class="see-all" onclick="showPage('movies')">See all →</span>
+      <span class="see-all" onclick="navigateTo('movies')">See all →</span>
     </div>
     <div class="carousel" id="trending-movies"></div>
   </div>
 
-  <!-- POPULAR SERIES -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Popular <span>Series</span></div>
-      <span class="see-all" onclick="showPage('series')">See all →</span>
+      <span class="see-all" onclick="navigateTo('series')">See all →</span>
     </div>
     <div class="carousel" id="popular-series"></div>
   </div>
 
-  <!-- TOP RATED -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">Top <span>Rated</span></div>
@@ -538,7 +532,6 @@
     <div class="carousel" id="top-rated"></div>
   </div>
 
-  <!-- NEW RELEASES -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">New <span>Releases</span></div>
@@ -585,7 +578,7 @@
 <div id="player-page" class="page">
   <div class="player-wrapper">
     <div class="player-title-bar">
-      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="back-btn" onclick="window.history.back()">←</div>
       <div class="player-heading" id="player-heading">Now Playing</div>
       <div class="player-subheading" id="player-subheading"></div>
     </div>
@@ -701,22 +694,19 @@ const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const sb = supabase.createClient(SB_URL, SB_KEY);
 const SOURCES = [
   { name: 'VidCore', movie: (id) => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` },
-  
-  { name: 'VidKing', movie: (id) => `https://vidking.net/movie/${id}`, tv: (id,s,e) => `https://vidking.net/tv/${id}/${s}/${e}` },
-  
+  {
+    name: 'VidKing',
+    movie: (id) => `https://www.vidking.net/embed/movie/${id}?color=F5A623&autoPlay=true`,
+    tv: (id,s,e) => `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=F5A623&autoPlay=true&nextEpisode=true&episodeSelector=true`
+  },
   { name: 'VidSrc', movie: (id) => `https://vidsrc.to/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-  
   { name: '2Embed', movie: (id) => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
-
-  
-
-  
 ];
 
 // ===================== STATE =====================
-let currentUser = null;      // { id, email, username }
-let localProgress = {};      // cache: tmdb_id -> row
-let localWatchlist = [];     // cache: array of rows
+let currentUser = null;
+let localProgress = {};
+let localWatchlist = [];
 let currentItem = null;
 let currentSeason = 1;
 let currentEpisode = 1;
@@ -724,9 +714,12 @@ let currentSource = 0;
 let searchTimeout = null;
 let searchType = 'multi';
 let heroItem = null;
-let prevPage = 'home';
 let progressInterval = null;
 let playerStartTime = null;
+let homeLoaded = false;
+let loadingHome = false;
+let moviePage = 1, movieGenre = 0, loadingMovies = false;
+let seriesPage = 1, seriesGenre = 0, loadingSeries = false;
 
 // ===================== AUTH =====================
 async function doRegister() {
@@ -747,7 +740,6 @@ async function doRegister() {
   btn.textContent = 'Create Account'; btn.disabled = false;
 
   if (error) { err.textContent = error.message; return; }
-  // Session may need email confirm — handle both cases
   if (data.session) {
     await onSignIn(data.session.user);
     closeModal();
@@ -776,7 +768,6 @@ async function doLogin() {
 }
 
 async function onSignIn(user) {
-  // Fetch profile for username
   const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
   currentUser = { id: user.id, email: user.email, username: profile?.username || user.email.split('@')[0] };
   await loadCloudData();
@@ -791,7 +782,7 @@ async function logout() {
   localProgress = {};
   localWatchlist = [];
   updateNav();
-  showPage('home');
+  navigateTo('home');
   toast('Signed out. See you next time!');
 }
 
@@ -812,8 +803,8 @@ function updateNav() {
     const initial = (currentUser.username || '?')[0].toUpperCase();
     nr.innerHTML = `<div class="avatar" onclick="toggleAvatarMenu()">${initial}
       <div class="avatar-menu" id="avatar-menu">
-        <div class="avatar-item" onclick="showPage('profile')">👤 Profile</div>
-        <div class="avatar-item" onclick="showPage('watchlist')">🔖 Watchlist</div>
+        <div class="avatar-item" onclick="navigateTo('profile')">👤 Profile</div>
+        <div class="avatar-item" onclick="navigateTo('watchlist')">🔖 Watchlist</div>
         <div class="avatar-item danger" onclick="logout()">🚪 Sign Out</div>
       </div></div>`;
     renderContinueWatching();
@@ -900,7 +891,7 @@ async function tmdb(path, params = {}) {
   const url = new URL(`${TMDB}${path}`);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+  const timeout = setTimeout(() => controller.abort(), 8000);
   try {
     const r = await fetch(url.href, {
       signal: controller.signal,
@@ -919,28 +910,106 @@ async function tmdb(path, params = {}) {
   }
 }
 
-// ===================== PAGES =====================
-function showPage(name) {
+// ===================== ROUTING (HISTORY API) =====================
+function parseRoute(hash) {
+  if (!hash || hash === '#/') return { page: 'home', params: {} };
+  const path = hash.replace(/^#\//, '');
+  const [pagePart, ...rest] = path.split('?');
+  const queryString = path.includes('?') ? path.split('?')[1] : '';
+  const segments = pagePart.split('/');
+  const page = segments[0];
+  const params = {};
+  if (page === 'player' && segments.length >= 3) {
+    params.type = segments[1];
+    params.id = segments[2];
+  } else if (page === 'search' && queryString) {
+    const usp = new URLSearchParams(queryString);
+    params.query = usp.get('q') || '';
+    params.type = usp.get('type') || 'multi';
+  }
+  return { page, params };
+}
+
+function buildURL(page, params) {
+  if (page === 'player') {
+    return `#/player/${params.type}/${params.id}`;
+  } else if (page === 'search') {
+    const usp = new URLSearchParams();
+    if (params.query) usp.set('q', params.query);
+    usp.set('type', params.type || searchType);
+    return `#/search?${usp.toString()}`;
+  } else {
+    return `#/${page}`;
+  }
+}
+
+function navigateTo(page, params, replace = false) {
+  const state = { page, params };
+  const url = buildURL(page, params);
+  if (replace) {
+    window.history.replaceState(state, '', url);
+  } else {
+    window.history.pushState(state, '', url);
+  }
+  loadPage(page, params);
+}
+
+window.addEventListener('popstate', (e) => {
+  if (e.state) {
+    loadPage(e.state.page, e.state.params);
+  } else {
+    // fallback to home
+    navigateTo('home', null, true);
+  }
+});
+
+function loadPage(page, params) {
+  stopProgressTracking(); // always stop tracking when leaving player
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById(name + '-page').classList.add('active');
-  const link = document.querySelector(`.nav-link[onclick*="${name}"]`);
+  const pageId = page + '-page';
+  const pageEl = document.getElementById(pageId);
+  if (pageEl) pageEl.classList.add('active');
+  const link = document.querySelector(`.nav-link[onclick*="${page}"]`);
   if (link) link.classList.add('active');
-  if (name !== 'player' && currentItem) { stopProgressTracking(); }
-  if (name === 'home') loadHome();
-  if (name === 'movies') loadMovies();
-  if (name === 'series') loadSeries();
-  if (name === 'watchlist') loadWatchlist();
-  if (name === 'profile') loadProfile();
+
+  switch(page) {
+    case 'home':
+      loadHome();
+      break;
+    case 'movies':
+      loadMovies(true);
+      break;
+    case 'series':
+      loadSeries(true);
+      break;
+    case 'search':
+      searchType = params.type || 'multi';
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      const activeTab = document.querySelector(`.type-tab[onclick*="${searchType}"]`);
+      if (activeTab) activeTab.classList.add('active');
+      document.getElementById('search-input').value = params.query || '';
+      fetchSearchResults(params.query || '');
+      break;
+    case 'player':
+      loadPlayerPage(params.type, params.id);
+      break;
+    case 'watchlist':
+      loadWatchlist();
+      break;
+    case 'profile':
+      loadProfile();
+      break;
+    default:
+      navigateTo('home', null, true);
+  }
   window.scrollTo(0, 0);
 }
 
 // ===================== HOME =====================
-let homeLoaded = false;
-let loadingHome = false;
 async function loadHome(force = false) {
-  if (loadingHome) return;          // already in-flight, don't double-fire
-  if (homeLoaded && !force) {       // already loaded, just refresh continue-watching
+  if (loadingHome) return;
+  if (homeLoaded && !force) {
     renderContinueWatching();
     return;
   }
@@ -989,11 +1058,11 @@ function renderHero(item) {
 
 function playHeroItem() {
   if (!heroItem) return;
-  openPlayer({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' });
+  goToItem({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' });
 }
 function viewHeroDetails() {
   if (!heroItem) return;
-  openPlayer({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' });
+  goToItem({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' });
 }
 
 // ===================== CAROUSELS =====================
@@ -1008,7 +1077,8 @@ function cardHTML(item) {
   const poster = item.poster_path ? `${IMG}/w300${item.poster_path}` : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="200" height="300" fill="%23161C36"/><text x="100" y="150" text-anchor="middle" fill="%236B7299" font-size="40">🎬</text></svg>';
   const prog = getProgress(item);
   const pct = prog ? Math.round(prog.progress) : 0;
-  return `<div class="card fade-in" onclick="openPlayer(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+  const escapedItem = JSON.stringify(item).replace(/"/g, '&quot;');
+  return `<div class="card fade-in" onclick="goToItem(${escapedItem})">
     <img class="card-img" src="${poster}" alt="${title}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22><rect width=%22200%22 height=%22300%22 fill=%22%23161C36%22/><text x=%22100%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%236B7299%22 font-size=%2240%22>🎬</text></svg>'">
     <div class="card-overlay">
       <div class="card-play-btn">▶</div>
@@ -1041,11 +1111,11 @@ function renderContinueWatching() {
     const sub = r.media_type==='tv' ? `S${r.season}E${r.episode}` : 'Movie';
     const pct = Math.round(r.progress_pct);
     const key = `${r.media_type}_${r.tmdb_id}`;
-    const itemJSON = JSON.stringify(item).replace(/"/g,'&quot;');
+    const escapedItem = JSON.stringify(item).replace(/"/g, '&quot;');
     return `<div class="continue-card">
       <img class="continue-img" src="${backdrop}" alt="${title}" onerror="this.style.background='var(--surface3)'">
       <button class="continue-remove" onclick="removeProgress(event,'${key}')">✕</button>
-      <div class="continue-info" onclick="openPlayer(${itemJSON})">
+      <div class="continue-info" onclick="goToItem(${escapedItem})">
         <div class="continue-title">${title}</div>
         <div class="continue-sub">${sub}</div>
         <div class="continue-bar"><div class="continue-fill" style="width:${pct}%"></div></div>
@@ -1066,7 +1136,7 @@ async function removeProgress(e, key) {
   toast('Removed from continue watching');
 }
 
-// ===================== MOVIES PAGE =====================
+// ===================== MOVIES / SERIES PAGES =====================
 const MOVIE_GENRES = [
   {id:28,name:'Action'},{id:12,name:'Adventure'},{id:16,name:'Animation'},
   {id:35,name:'Comedy'},{id:80,name:'Crime'},{id:99,name:'Documentary'},
@@ -1075,7 +1145,6 @@ const MOVIE_GENRES = [
   {id:9648,name:'Mystery'},{id:10749,name:'Romance'},{id:878,name:'Sci-Fi'},
   {id:53,name:'Thriller'},{id:10752,name:'War'},{id:37,name:'Western'}
 ];
-let moviePage = 1, movieGenre = 0, loadingMovies = false;
 
 async function loadMovies(reset=true) {
   if (reset) {
@@ -1110,7 +1179,6 @@ const TV_GENRES = [
   {id:10762,name:'Kids'},{id:10763,name:'News'},{id:10764,name:'Reality'},
   {id:10766,name:'Soap'},{id:10767,name:'Talk'},{id:10768,name:'War'},
 ];
-let seriesPage = 1, seriesGenre = 0, loadingSeries = false;
 
 async function loadSeries(reset=true) {
   if (reset) {
@@ -1151,16 +1219,23 @@ window.addEventListener('scroll', () => {
 function handleSearch(val) {
   clearTimeout(searchTimeout);
   if (!val.trim()) return;
-  searchTimeout = setTimeout(() => { showPage('search'); doSearch(); }, 400);
+  searchTimeout = setTimeout(() => {
+    const q = document.getElementById('search-input').value.trim();
+    navigateTo('search', { query: q });
+  }, 400);
 }
-async function doSearch() {
+function doSearch() {
   const q = document.getElementById('search-input').value.trim();
   if (!q) return;
+  navigateTo('search', { query: q });
+}
+async function fetchSearchResults(query) {
+  if (!query) return;
   document.getElementById('search-results').innerHTML = '';
   document.getElementById('search-loader').style.display = '';
-  const data = await tmdb(`/search/${searchType}`, { query: q, include_adult: false });
+  const data = await tmdb(`/search/${searchType}`, { query, include_adult: false });
   document.getElementById('search-loader').style.display = 'none';
-  document.getElementById('search-meta').textContent = `${data.total_results || 0} results for "${q}"`;
+  document.getElementById('search-meta').textContent = `${data.total_results || 0} results for "${query}"`;
   const results = (data.results || []).filter(x => x.poster_path || x.backdrop_path);
   document.getElementById('search-results').innerHTML = results.map(item => {
     const type = item.media_type || (searchType === 'multi' ? (item.title ? 'movie' : 'tv') : searchType);
@@ -1171,26 +1246,28 @@ function setSearchType(type) {
   searchType = type;
   document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
-  doSearch();
+  const q = document.getElementById('search-input').value.trim();
+  navigateTo('search', { query: q, type });
 }
 
-// ===================== PLAYER =====================
-async function openPlayer(item) {
-  stopProgressTracking();
-  currentItem = item;
+// ===================== PLAYER (via routing) =====================
+function goToItem(item) {
   const type = item.media_type || (item.title ? 'movie' : 'tv');
-  currentItem.media_type = type;
+  navigateTo('player', { type, id: item.id });
+}
 
-  prevPage = document.querySelector('.page.active')?.id?.replace('-page','') || 'home';
-  showPage('player');
-
-  const title = item.title || item.name;
+async function loadPlayerPage(type, id) {
+  // show page active already set by loadPage
+  const details = await tmdb(`/${type === 'movie' ? 'movie' : 'tv'}/${id}`);
+  if (!details) {
+    toast('Failed to load media details', 'error');
+    return;
+  }
+  currentItem = { ...details, media_type: type };
+  const title = details.title || details.name;
   document.getElementById('player-heading').textContent = title;
   document.getElementById('player-title').textContent = title;
-  document.getElementById('player-overview').textContent = item.overview || '';
-
-  // Fetch details
-  const details = await tmdb(`/${type === 'movie' ? 'movie' : 'tv'}/${item.id}`);
+  document.getElementById('player-overview').textContent = details.overview || '';
   const meta = document.getElementById('player-meta');
   const year = (details.release_date || details.first_air_date || '').split('-')[0];
   meta.innerHTML = `
@@ -1200,8 +1277,7 @@ async function openPlayer(item) {
     ${(details.genres||[]).slice(0,3).map(g=>`<span class="badge">${g.name}</span>`).join('')}
   `;
 
-  // Check saved progress
-  const savedProg = getProgress(item);
+  const savedProg = getProgress(currentItem);
   if (type === 'tv') {
     currentSeason = savedProg?.season || 1;
     currentEpisode = savedProg?.episode || 1;
@@ -1210,7 +1286,7 @@ async function openPlayer(item) {
   } else {
     currentSeason = 1; currentEpisode = 1;
     document.getElementById('episodes-panel').style.display = 'none';
-    loadSource(type, item.id, 1, 1);
+    loadSource(type, id, 1, 1);
   }
 
   if (savedProg) toast(`Resuming from where you left off (${Math.round(savedProg.progress)}%)`, 'info');
@@ -1280,11 +1356,6 @@ function selectEpisode(ep, seriesId) {
   document.getElementById('ep-row-'+ep)?.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function goBack() {
-  stopProgressTracking();
-  showPage(prevPage || 'home');
-}
-
 // ===================== WATCHLIST PAGE =====================
 function loadWatchlist() {
   const grid = document.getElementById('watchlist-grid');
@@ -1301,28 +1372,27 @@ function loadWatchlist() {
 
 // ===================== PROFILE PAGE =====================
 function loadProfile() {
-  if (!currentUser) { showPage('home'); return; }
-  document.getElementById('profile-avatar').textContent = currentUser[0].toUpperCase();
-  document.getElementById('profile-name-display').textContent = currentUser;
-  document.getElementById('profile-email-display').textContent = db.users[currentUser]?.email || '';
+  if (!currentUser) { navigateTo('home'); return; }
+  document.getElementById('profile-avatar').textContent = (currentUser.username || currentUser.email)[0].toUpperCase();
+  document.getElementById('profile-name-display').textContent = currentUser.username || currentUser.email;
+  document.getElementById('profile-email-display').textContent = currentUser.email;
 
-  const progress = Object.values(db.progress[currentUser] || {});
-  const watchlist = db.watchlist[currentUser] || [];
-  const watched = progress.filter(p => p.progress >= 95).length;
+  const progressArr = Object.values(localProgress);
+  const watched = progressArr.filter(p => p.progress_pct >= 95).length;
 
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${progress.length}</div><div class="stat-label">Titles Started</div></div>
+    <div class="stat-card"><div class="stat-num">${progressArr.length}</div><div class="stat-label">Titles Started</div></div>
     <div class="stat-card"><div class="stat-num">${watched}</div><div class="stat-label">Completed</div></div>
-    <div class="stat-card"><div class="stat-num">${watchlist.length}</div><div class="stat-label">In Watchlist</div></div>
+    <div class="stat-card"><div class="stat-num">${localWatchlist.length}</div><div class="stat-label">In Watchlist</div></div>
   `;
 
   const cont = document.getElementById('profile-continue');
-  const inProg = progress.filter(p=>p.progress>0&&p.progress<95).sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,10);
-  cont.innerHTML = inProg.length ? inProg.map(p=>cardHTML(p.item)).join('') :
+  const inProg = progressArr.filter(p=>p.progress_pct>0&&p.progress_pct<95).sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at)).slice(0,10);
+  cont.innerHTML = inProg.length ? inProg.map(r => cardHTML({ ...r.item_data, media_type: r.media_type })).join('') :
     `<div class="empty-state" style="padding:20px"><div class="empty-desc">Nothing in progress yet.</div></div>`;
 
   const wl = document.getElementById('profile-watchlist');
-  wl.innerHTML = watchlist.length ? watchlist.map(item=>cardHTML(item)).join('') :
+  wl.innerHTML = localWatchlist.length ? localWatchlist.map(r => cardHTML({ ...r.item_data, media_type: r.media_type })).join('') :
     `<div class="empty-state" style="padding:20px"><div class="empty-desc">Your watchlist is empty.</div></div>`;
 }
 
@@ -1355,11 +1425,12 @@ async function init() {
   } catch(e) {
     console.warn('Session restore failed:', e);
   }
-  loadHome();
+  updateNav();
+  const { page, params } = parseRoute(window.location.hash);
+  navigateTo(page, params, true);
 }
 init();
 
-// Save progress on page leave
 window.addEventListener('beforeunload', () => {
   if (currentUser && currentItem && playerStartTime) {
     saveProgress(currentItem, currentSeason, currentEpisode);
