@@ -3,909 +3,3377 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Muxio</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 680 680'%3E%3Crect width='680' height='680' rx='120' fill='%2308091A'/%3E%3Crect x='80' y='58' width='520' height='78' rx='10' fill='%23161C36'/%3E%3Crect x='108' y='72' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='208' y='72' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='308' y='72' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='408' y='72' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='508' y='72' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='80' y='544' width='520' height='78' rx='10' fill='%23161C36'/%3E%3Crect x='108' y='558' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='208' y='558' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='308' y='558' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='408' y='558' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='508' y='558' width='56' height='50' rx='7' fill='%2308091A'/%3E%3Crect x='110' y='168' width='68' height='344' rx='12' fill='%23E8EAFF'/%3E%3Crect x='502' y='168' width='68' height='344' rx='12' fill='%23E8EAFF'/%3E%3Cpolygon points='178,168 246,168 340,278 340,368 178,512 110,512 110,424 258,280 178,168' fill='%23E8EAFF'/%3E%3Cpolygon points='502,168 434,168 340,278 340,368 502,512 570,512 570,424 422,280 502,168' fill='%23E8EAFF'/%3E%3Cpolygon points='246,168 434,168 340,310' fill='%2308091A'/%3E%3Ccircle cx='340' cy='370' r='105' fill='%23F5A623' opacity='0.12'/%3E%3Cpolygon points='304,316 304,424 406,370' fill='%23F5A623'/%3E%3C/svg%3E">
+<title>CineVault — Cinema</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 680 680'%3E%3Crect width='680' height='680' rx='120' fill='%2308091A'/%3E%3Cpolygon points='110,168 68,168 340,512 502,512' fill='%23E8EAFF'/%3E%3Ccircle cx='340' cy='370' r='105' fill='%23F5A623' opacity='0.12'/%3E%3Cpolygon points='304,316 304,424 406,370' fill='%23F5A623'/%3E%3C/svg%3E" />
 <style>
-  :root {
-    --bg: #08091A;
-    --surface: #0F1428;
-    --surface2: #161C36;
-    --surface3: #1E2540;
-    --gold: #F5A623;
-    --gold2: #FFB84D;
-    --blue: #4A6FFF;
-    --text: #E8EAFF;
-    --muted: #6B7299;
-    --danger: #FF4D6D;
-    --success: #22D07A;
-    --radius: 10px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
-  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; overflow-x:hidden; }
-  ::-webkit-scrollbar { width:6px; height:6px; }
-  ::-webkit-scrollbar-track { background:var(--surface); }
-  ::-webkit-scrollbar-thumb { background:var(--surface3); border-radius:3px; }
-  #nav {
-    position:fixed; top:0; left:0; right:0; z-index:1000;
-    display:flex; align-items:center; gap:16px; padding:0 24px; height:64px;
-    background:linear-gradient(180deg,rgba(8,9,26,0.98) 0%,rgba(8,9,26,0.85) 100%);
-    backdrop-filter:blur(12px);
-    border-bottom:1px solid rgba(245,166,35,0.1);
-  }
-  .logo { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:3px; color:var(--gold); text-decoration:none; flex-shrink:0; text-shadow:0 0 20px rgba(245,166,35,0.4); }
-  .logo span { color:var(--text); }
-  .nav-links { display:flex; gap:4px; margin-left:8px; }
-  .nav-link { padding:7px 14px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:14px; font-weight:500; transition:all 0.2s; border:none; background:none; }
-  .nav-link:hover, .nav-link.active { color:var(--text); background:var(--surface2); }
-  .nav-link.active { color:var(--gold); }
-  .search-bar { flex:1; max-width:400px; margin-left:auto; display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--surface3); border-radius:10px; padding:0 14px; height:38px; transition:border-color 0.2s; }
-  .search-bar:focus-within { border-color:var(--gold); }
-  .search-bar input { background:none; border:none; outline:none; color:var(--text); font-family:'Inter',sans-serif; font-size:14px; width:100%; }
-  .search-bar input::placeholder { color:var(--muted); }
-  .search-icon { color:var(--muted); font-size:16px; }
-  .nav-right { display:flex; gap:8px; align-items:center; margin-left:8px; }
-  .btn { padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border:none; font-family:'Inter',sans-serif; }
-  .btn-gold { background:var(--gold); color:#000; }
-  .btn-gold:hover { background:var(--gold2); transform:translateY(-1px); }
-  .btn-outline { background:transparent; color:var(--text); border:1px solid var(--surface3); }
-  .btn-outline:hover { border-color:var(--gold); color:var(--gold); }
-  .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--gold),#FF6B35); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:#000; cursor:pointer; flex-shrink:0; position:relative; }
-  .avatar-menu { position:absolute; top:44px; right:0; background:var(--surface); border:1px solid var(--surface3); border-radius:10px; padding:8px; min-width:160px; display:none; flex-direction:column; gap:4px; box-shadow:var(--shadow); }
-  .avatar-menu.open { display:flex; }
-  .avatar-item { padding:8px 12px; border-radius:6px; cursor:pointer; font-size:13px; color:var(--muted); transition:all 0.15s; }
-  .avatar-item:hover { background:var(--surface2); color:var(--text); }
-  .avatar-item.danger:hover { color:var(--danger); }
-  .page { display:none; padding-top:64px; min-height:100vh; }
-  .page.active { display:block; }
-  #hero { position:relative; height:85vh; min-height:500px; display:flex; align-items:flex-end; padding:48px; overflow:hidden; }
-  #hero-bg { position:absolute; inset:0; background-size:cover; background-position:center top; transition:opacity 0.8s; }
-  #hero-bg::after { content:''; position:absolute; inset:0; background:linear-gradient(0deg,var(--bg) 0%,rgba(8,9,26,0.7) 40%,rgba(8,9,26,0.2) 100%); }
-  .hero-content { position:relative; z-index:1; max-width:600px; }
-  .hero-tag { display:inline-flex; align-items:center; gap:6px; background:rgba(245,166,35,0.15); border:1px solid rgba(245,166,35,0.3); color:var(--gold); font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px; margin-bottom:16px; letter-spacing:1px; text-transform:uppercase; }
-  .hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(40px,6vw,80px); line-height:0.95; letter-spacing:2px; margin-bottom:12px; text-shadow:0 4px 24px rgba(0,0,0,0.5); }
-  .hero-meta { display:flex; gap:12px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
-  .hero-meta span { font-size:13px; color:var(--muted); }
-  .hero-meta .dot { width:3px; height:3px; background:var(--muted); border-radius:50%; }
-  .hero-rating { color:var(--gold); font-weight:600; font-size:14px; }
-  .hero-desc { font-size:15px; line-height:1.6; color:rgba(232,234,255,0.8); margin-bottom:24px; max-width:500px; }
-  .hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
-  .btn-play { display:flex; align-items:center; gap:10px; background:var(--gold); color:#000; padding:13px 28px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; border:none; font-family:'Inter',sans-serif; transition:all 0.2s; }
-  .btn-play:hover { background:var(--gold2); transform:translateY(-2px); box-shadow:0 8px 24px rgba(245,166,35,0.3); }
-  .btn-more { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.12); color:var(--text); padding:13px 28px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.15); font-family:'Inter',sans-serif; transition:all 0.2s; backdrop-filter:blur(8px); }
-  .btn-more:hover { background:rgba(255,255,255,0.18); }
-  .section { padding:32px 48px; }
-  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-  .section-title { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:2px; }
-  .section-title span { color:var(--gold); }
-  .see-all { font-size:13px; color:var(--muted); cursor:pointer; transition:color 0.2s; }
-  .see-all:hover { color:var(--gold); }
-  .carousel { display:flex; gap:14px; overflow-x:auto; padding-bottom:12px; scroll-behavior:smooth; }
-  .carousel::-webkit-scrollbar { height:3px; }
-  .card { flex-shrink:0; width:160px; cursor:pointer; transition:transform 0.25s; position:relative; }
-  .card:hover { transform:translateY(-6px) scale(1.02); }
-  .card-img { width:100%; aspect-ratio:2/3; object-fit:cover; border-radius:var(--radius); background:var(--surface2); display:block; box-shadow:0 4px 16px rgba(0,0,0,0.4); transition:box-shadow 0.25s; }
-  .card:hover .card-img { box-shadow:0 12px 32px rgba(0,0,0,0.6); }
-  .card:hover .card-overlay { opacity:1; }
-  .card:hover .card-info { opacity:0; }
-  .card-overlay { position:absolute; inset:0; border-radius:var(--radius); background:linear-gradient(0deg,rgba(8,9,26,0.97) 0%,rgba(8,9,26,0.5) 50%,rgba(8,9,26,0.1) 100%); opacity:0; transition:opacity 0.25s; display:flex; flex-direction:column; justify-content:flex-end; padding:12px; }
-  .card-play-btn { width:40px; height:40px; background:var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:10px; font-size:15px; color:#000; box-shadow:0 4px 16px rgba(245,166,35,0.4); flex-shrink:0; }
-  .card-label { font-size:12px; font-weight:600; color:var(--text); line-height:1.35; }
-  .card-meta { font-size:11px; color:rgba(232,234,255,0.6); margin-top:3px; }
-  .card-info { padding:8px 2px 0; transition:opacity 0.2s; }
-  .card-title { font-size:13px; font-weight:500; line-height:1.3; }
-  .card-year { font-size:12px; color:var(--muted); margin-top:2px; }
-  .card-rating { font-size:11px; color:var(--gold); margin-top:2px; }
-  .card-progress { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.1); border-radius:0 0 var(--radius) var(--radius); overflow:hidden; }
-  .card-progress-bar { height:100%; background:var(--gold); border-radius:inherit; }
-  .genres { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; padding:0 48px; }
-  .genre-pill { padding:7px 16px; border-radius:20px; font-size:13px; cursor:pointer; border:1px solid var(--surface3); background:var(--surface2); color:var(--muted); transition:all 0.2s; font-weight:500; }
-  .genre-pill:hover, .genre-pill.active { border-color:var(--gold); color:var(--gold); background:rgba(245,166,35,0.08); }
-  .results-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:20px; padding:32px 48px; }
-  .search-meta { padding:8px 48px 0; color:var(--muted); font-size:14px; }
-  .type-tabs { display:flex; gap:8px; padding:24px 48px 0; }
-  .type-tab { padding:8px 20px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:500; border:none; background:var(--surface2); color:var(--muted); transition:all 0.2s; font-family:'Inter',sans-serif; }
-  .type-tab.active { background:var(--gold); color:#000; }
-  #player-page { background:var(--bg); }
-  .player-wrapper { width:100%; max-width:1400px; margin:0 auto; padding:16px 48px; }
-  .player-title-bar { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-  .back-btn { width:36px; height:36px; background:var(--surface2); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:1px solid var(--surface3); color:var(--muted); transition:all 0.2s; font-size:18px; }
-  .back-btn:hover { border-color:var(--gold); color:var(--gold); }
-  .player-heading { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; }
-  .player-subheading { font-size:14px; color:var(--muted); margin-left:auto; }
-  .iframe-container { width:100%; aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.7); }
-  .iframe-container iframe { width:100%; height:100%; border:none; }
-  .player-controls { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; align-items:center; }
-  .source-btn { padding:7px 16px; border-radius:8px; font-size:13px; cursor:pointer; border:1px solid var(--surface3); background:var(--surface2); color:var(--muted); transition:all 0.2s; font-weight:500; font-family:'Inter',sans-serif; }
-  .source-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(245,166,35,0.08); }
-  .source-btn:hover { border-color:var(--gold); color:var(--gold); }
-  .source-label { font-size:12px; color:var(--muted); margin-right:4px; }
-  .progress-note { margin-left:auto; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
-  .progress-dot { width:6px; height:6px; background:var(--success); border-radius:50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .player-details { display:grid; grid-template-columns:1fr 340px; gap:32px; margin-top:28px; }
-  .player-info h1 { font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; }
-  .player-info .meta { display:flex; gap:12px; margin:10px 0 16px; flex-wrap:wrap; }
-  .badge { padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600; background:var(--surface2); color:var(--muted); }
-  .badge.gold { background:rgba(245,166,35,0.15); color:var(--gold); }
-  .player-overview { font-size:15px; line-height:1.7; color:rgba(232,234,255,0.75); }
-  .season-selector { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-  .season-btn { padding:7px 16px; border-radius:8px; font-size:13px; cursor:pointer; border:1px solid var(--surface3); background:var(--surface2); color:var(--muted); transition:all 0.2s; font-weight:500; font-family:'Inter',sans-serif; }
-  .season-btn.active { border-color:var(--blue); color:var(--blue); background:rgba(74,111,255,0.08); }
-  .episodes-panel h3 { font-size:15px; font-weight:600; margin-bottom:12px; }
-  .ep-list { display:flex; flex-direction:column; gap:8px; max-height:500px; overflow-y:auto; }
-  .ep-row { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; cursor:pointer; transition:all 0.2s; border:1px solid transparent; }
-  .ep-row:hover { background:var(--surface2); border-color:var(--surface3); }
-  .ep-row.active { background:rgba(245,166,35,0.08); border-color:rgba(245,166,35,0.3); }
-  .ep-num-badge { width:32px; height:32px; background:var(--surface3); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; color:var(--muted); }
-  .ep-row.active .ep-num-badge { background:var(--gold); color:#000; }
-  .ep-row-title { font-size:13px; font-weight:500; }
-  .ep-row-meta { font-size:11px; color:var(--muted); margin-top:1px; }
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(6px); }
-  .modal-overlay.hidden { display:none; }
-  .modal { background:var(--surface); border:1px solid var(--surface3); border-radius:16px; padding:32px; width:100%; max-width:420px; position:relative; box-shadow:var(--shadow); }
-  .modal h2 { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px; margin-bottom:4px; }
-  .modal p { font-size:14px; color:var(--muted); margin-bottom:24px; }
-  .form-group { margin-bottom:16px; }
-  .form-group label { display:block; font-size:13px; font-weight:500; color:var(--muted); margin-bottom:6px; }
-  .form-input { width:100%; padding:11px 14px; border-radius:9px; font-size:14px; background:var(--surface2); border:1px solid var(--surface3); color:var(--text); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
-  .form-input:focus { border-color:var(--gold); }
-  .form-actions { display:flex; gap:10px; margin-top:24px; }
-  .form-actions .btn { flex:1; padding:12px; font-size:14px; }
-  .modal-close { position:absolute; top:16px; right:16px; width:28px; height:28px; background:var(--surface2); border:none; border-radius:6px; cursor:pointer; color:var(--muted); font-size:16px; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
-  .modal-close:hover { color:var(--text); }
-  .modal-switch { text-align:center; margin-top:16px; font-size:13px; color:var(--muted); }
-  .modal-switch a { color:var(--gold); cursor:pointer; }
-  .error-msg { color:var(--danger); font-size:13px; margin-top:8px; }
-  #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--surface); border:1px solid var(--surface3); border-radius:10px; padding:12px 20px; font-size:14px; font-weight:500; z-index:3000; transition:transform 0.3s ease; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; }
-  #toast.show { transform:translateX(-50%) translateY(0); }
-  #toast .toast-icon { font-size:16px; }
-  .continue-card { flex-shrink:0; width:240px; cursor:pointer; background:var(--surface2); border-radius:var(--radius); overflow:hidden; border:1px solid var(--surface3); transition:all 0.2s; position:relative; }
-  .continue-card:hover { border-color:var(--gold); transform:translateY(-4px); }
-  .continue-img { width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--surface3); display:block; }
-  .continue-info { padding:10px 12px 12px; }
-  .continue-title { font-size:13px; font-weight:600; }
-  .continue-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-  .continue-bar { height:4px; background:var(--surface3); margin-top:10px; border-radius:2px; width:100%; }
-  .continue-fill { height:100%; background:var(--gold); border-radius:2px; min-width:2px; }
-  .continue-pct { font-size:11px; color:var(--muted); margin-top:4px; }
-  .continue-remove { position:absolute; top:6px; right:6px; width:22px; height:22px; background:rgba(8,9,26,0.8); border:none; border-radius:50%; cursor:pointer; color:var(--muted); font-size:12px; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s; z-index:5; }
-  .continue-card:hover .continue-remove { opacity:1; }
-  .watchlist-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:20px; padding:32px 48px; }
-  .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
-  .empty-icon { font-size:48px; margin-bottom:16px; }
-  .empty-title { font-size:18px; font-weight:600; color:var(--text); margin-bottom:8px; }
-  .empty-desc { font-size:14px; line-height:1.6; }
-  .loader { display:flex; justify-content:center; padding:40px; }
-  .spinner { width:36px; height:36px; border:3px solid var(--surface3); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .profile-header { padding:40px 48px 0; display:flex; align-items:center; gap:24px; }
-  .profile-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--gold),#FF6B35); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:32px; color:#000; }
-  .profile-name { font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:2px; }
-  .profile-email { font-size:14px; color:var(--muted); }
-  .stats-row { display:flex; gap:24px; padding:24px 48px; flex-wrap:wrap; }
-  .stat-card { background:var(--surface2); border:1px solid var(--surface3); border-radius:12px; padding:20px 24px; min-width:160px; }
-  .stat-num { font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--gold); letter-spacing:2px; }
-  .stat-label { font-size:13px; color:var(--muted); margin-top:2px; }
-  .iframe-notice { background:rgba(245,166,35,0.08); border:1px solid rgba(245,166,35,0.2); border-radius:8px; padding:10px 14px; font-size:13px; color:var(--muted); margin-top:8px; }
-  .iframe-notice strong { color:var(--gold); }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-  .fade-in { animation:fadeIn 0.4s ease forwards; }
-  @media(max-width:768px) {
-    .section { padding:24px 16px; } #hero { padding:24px 16px; height:70vh; }
-    .genres { padding:0 16px; } .results-grid { padding:24px 16px; gap:12px; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); }
-    .type-tabs { padding:16px 16px 0; } .search-meta { padding:8px 16px 0; }
-    .watchlist-grid { padding:24px 16px; } .player-wrapper { padding:12px 16px; }
-    .player-details { grid-template-columns:1fr; } .profile-header { padding:24px 16px 0; }
-    .stats-row { padding:16px 16px; } #nav { padding:0 12px; } .nav-links { display:none; }
-  }
+    /* ─── reset & base ─── */
+    :root {
+        --bg: #090A11;
+        --surface: #121420;
+        --surface2: #1A1D2E;
+        --surface3: #252A42;
+        --text: #F3F4FB;
+        --muted: #838AA7;
+        --gold: #DCA543;
+        --gold2: #E9C16E;
+        --success: #10B981;
+        --danger: #EF4444;
+        --shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5);
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: var(--surface3);
+        border-radius: 12px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+    }
+
+    /* ─── animations ─── */
+    @keyframes pageEntrance {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .page {
+        display: none;
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--bg);
+    }
+    .page.active {
+        display: block;
+        animation: pageEntrance 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* ─── nav ─── */
+    #nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 28px;
+        height: 64px;
+        background: rgba(9, 10, 17, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .logo {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 28px;
+        letter-spacing: 2px;
+        color: var(--gold);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+    .logo span {
+        color: var(--text);
+    }
+    .nav-links {
+        display: flex;
+        gap: 4px;
+    }
+    .nav-link {
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+        background: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .nav-link:hover,
+    .nav-link.active {
+        color: var(--text);
+        background: var(--surface);
+    }
+    .nav-link.active {
+        color: var(--gold);
+    }
+    .nav-link.nav-roulette-btn {
+        position: relative;
+        overflow: hidden;
+        color: var(--gold) !important;
+        font-weight: 700 !important;
+        border: 1px solid rgba(220, 165, 67, 0.25) !important;
+        background: rgba(220, 165, 67, 0.06) !important;
+        animation: navPulseGlow 3s infinite ease-in-out !important;
+    }
+    .nav-link.nav-roulette-btn:hover {
+        color: #090A11 !important;
+        background: var(--gold) !important;
+        box-shadow: 0 0 20px rgba(220, 165, 67, 0.6) !important;
+        border-color: var(--gold) !important;
+        animation: none;
+    }
+    .nav-link.nav-roulette-btn::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -120px;
+        width: 60px;
+        height: 200%;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 100%);
+        transform: rotate(30deg);
+        pointer-events: none;
+        animation: shineSweep 4.5s infinite ease-in-out;
+    }
+    .nav-link.nav-roulette-btn.active {
+        color: #090A11 !important;
+        background: var(--gold) !important;
+        border-color: var(--gold) !important;
+    }
+    @keyframes navPulseGlow {
+        0% {
+            box-shadow: 0 0 8px rgba(220, 165, 67, 0.15);
+            border-color: rgba(220, 165, 67, 0.25);
+        }
+        50% {
+            box-shadow: 0 0 16px rgba(220, 165, 67, 0.4);
+            border-color: rgba(220, 165, 67, 0.5);
+        }
+        100% {
+            box-shadow: 0 0 8px rgba(220, 165, 67, 0.15);
+            border-color: rgba(220, 165, 67, 0.25);
+        }
+    }
+    @keyframes shineSweep {
+        0% {
+            left: -120px;
+        }
+        20% {
+            left: 100%;
+        }
+        100% {
+            left: 100%;
+        }
+    }
+
+    .search-bar {
+        flex: 1;
+        max-width: 300px;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 0 12px;
+        height: 38px;
+        transition: border-color 0.2s;
+    }
+    .search-bar:focus-within {
+        border-color: var(--gold);
+    }
+    .search-bar svg {
+        width: 14px;
+        height: 14px;
+        color: var(--muted);
+        flex-shrink: 0;
+    }
+    .search-bar input {
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-size: 13px;
+        width: 100%;
+        font-family: 'Inter', sans-serif;
+    }
+    .search-bar input::placeholder {
+        color: var(--muted);
+    }
+
+    .nav-right {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* language toggle */
+    .lang-btn {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--surface);
+        color: var(--muted);
+        font-family: 'Inter', sans-serif;
+        transition: all 0.2s;
+        letter-spacing: 0.3px;
+    }
+    .lang-btn:hover {
+        border-color: var(--gold);
+        color: var(--text);
+        background: var(--surface2);
+    }
+    .lang-btn.active-lang {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(220, 165, 67, 0.06);
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+        font-family: 'Inter', sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .btn-gold {
+        background: var(--gold);
+        color: #090A11;
+    }
+    .btn-gold:hover {
+        background: var(--gold2);
+        transform: translateY(-1px);
+    }
+    .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-outline:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .btn-sm {
+        padding: 7px 14px;
+        font-size: 12px;
+    }
+    .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+    }
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+        color: #090A11;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s;
+    }
+    .avatar:hover {
+        transform: scale(1.05);
+    }
+    .avatar-menu {
+        position: absolute;
+        top: 48px;
+        right: 0;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 8px;
+        min-width: 180px;
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        box-shadow: var(--shadow);
+    }
+    .avatar-menu.open {
+        display: flex;
+    }
+    .avatar-item {
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--muted);
+        transition: all 0.2s;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .avatar-item:hover {
+        background: var(--surface2);
+        color: var(--text);
+    }
+    .avatar-item.danger:hover {
+        color: var(--danger);
+    }
+
+    /* ─── layout ─── */
+    .section {
+        padding: 24px 32px;
+    }
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 24px;
+        letter-spacing: 1px;
+        color: var(--text);
+    }
+    .section-title span {
+        color: var(--gold);
+    }
+    .see-all {
+        font-size: 13px;
+        color: var(--muted);
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+    .see-all:hover {
+        color: var(--gold);
+    }
+    .carousel {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+    }
+    .carousel::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    /* ─── cards ─── */
+    .card {
+        flex-shrink: 0;
+        width: 160px;
+        cursor: pointer;
+        position: relative;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        overflow: hidden;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+        border-color: var(--gold);
+        box-shadow: var(--shadow);
+    }
+    .card-img-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2/3;
+        overflow: hidden;
+        background: #090A11;
+    }
+    .card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card:hover .card-img {
+        transform: scale(1.05);
+    }
+    .watchlist-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .card:hover .watchlist-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .watchlist-btn:hover {
+        background: var(--gold);
+        color: #090A11;
+        border-color: var(--gold);
+    }
+    .watchlist-btn.added {
+        background: var(--gold);
+        color: #090A11;
+        border-color: var(--gold);
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+    .card-info {
+        padding: 10px 12px;
+    }
+    .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text);
+    }
+    .card-meta {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-rating {
+        color: var(--gold);
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    /* ─── hero ─── */
+    #hero {
+        position: relative;
+        height: 60vh;
+        min-height: 440px;
+        display: flex;
+        align-items: flex-end;
+        padding: 48px 32px;
+        overflow: hidden;
+        margin-bottom: 16px;
+        border-radius: 0 0 24px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    #hero-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center top;
+        z-index: 1;
+    }
+    #hero-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, var(--bg) 0%, rgba(9, 10, 17, 0.65) 55%, rgba(9, 10, 17, 0.05) 100%);
+    }
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 640px;
+    }
+    .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(220, 165, 67, 0.1);
+        border: 1px solid rgba(220, 165, 67, 0.25);
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .hero-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(32px, 5vw, 58px);
+        line-height: 0.95;
+        margin-bottom: 10px;
+        color: var(--text);
+        letter-spacing: 1px;
+    }
+    .hero-meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+    .hero-desc {
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(243, 244, 251, 0.76);
+        margin-bottom: 22px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .hero-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* ─── continue watching ─── */
+    .continue-card {
+        flex-shrink: 0;
+        width: 224px;
+        background: var(--surface);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        position: relative;
+        transition: border-color 0.2s;
+    }
+    .continue-card:hover {
+        border-color: var(--gold);
+    }
+    .continue-img {
+        width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        display: block;
+        background: #090A11;
+    }
+    .continue-info {
+        padding: 12px;
+        cursor: pointer;
+    }
+    .continue-title {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text);
+    }
+    .continue-sub {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        font-weight: 500;
+    }
+    .continue-bar {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+    .continue-fill {
+        height: 100%;
+        background: var(--gold);
+    }
+    .continue-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        background: rgba(9, 10, 17, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        transition: all 0.2s;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+    }
+    .continue-remove:hover {
+        color: var(--text);
+        border-color: var(--gold);
+    }
+
+    /* ─── spotlight ─── */
+    .spotlight-panel {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        gap: 24px;
+        align-items: center;
+    }
+    .spotlight-poster {
+        width: 110px;
+        aspect-ratio: 2/3;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .spotlight-info {
+        flex: 1;
+    }
+    .spotlight-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--text);
+    }
+    .spotlight-desc {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 14px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* ─── genres ─── */
+    .genres {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .genre-pill {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: var(--surface);
+        color: var(--muted);
+        transition: all 0.2s;
+    }
+    .genre-pill:hover,
+    .genre-pill.active {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(220, 165, 67, 0.05);
+    }
+
+    /* ─── grids ─── */
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        padding: 16px 32px;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 64px 32px;
+        color: var(--muted);
+        max-width: 440px;
+        margin: 0 auto;
+    }
+    .empty-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: center;
+    }
+    .empty-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+    .empty-desc {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    /* ─── loaders ─── */
+    .loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 48px 0;
+    }
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--surface3);
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ─── roulette ─── */
+    @keyframes spinRoll {
+        0% {
+            transform: translateY(-4px) scale(0.97);
+            filter: blur(1.2px);
+        }
+        50% {
+            transform: translateY(4px) scale(0.99);
+            filter: blur(1.8px);
+        }
+        100% {
+            transform: translateY(-4px) scale(0.97);
+            filter: blur(1.2px);
+        }
+    }
+    .spin-roll {
+        animation: spinRoll 0.12s ease-in-out infinite;
+    }
+    @keyframes revealScale {
+        0% {
+            transform: scale(0.93) rotate(-1.5deg);
+            filter: brightness(1.4) blur(6px);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+            filter: brightness(1) blur(0);
+            opacity: 1;
+        }
+    }
+    .reveal-scale {
+        animation: revealScale 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.22) forwards;
+    }
+
+    .roulette-container {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 32px 16px;
+    }
+    .bento-box {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+    .control-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .control-lbl {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        display: block;
+        letter-spacing: 0.8px;
+    }
+    .premium-select,
+    .premium-input {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        padding: 11px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .premium-select:focus,
+    .premium-input:focus {
+        border-color: var(--gold);
+    }
+    .spin-action-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        background: var(--gold);
+        color: #090A11;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+        letter-spacing: 0.5px;
+    }
+    .spin-action-btn:hover {
+        background: var(--gold2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 165, 67, 0.2);
+    }
+    .roulette-result {
+        display: flex;
+        gap: 24px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 24px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    .roulette-result.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .result-poster {
+        width: 160px;
+        aspect-ratio: 2/3;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+        background: #090A11;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .result-info {
+        flex: 1;
+    }
+    .result-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 30px;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        color: var(--text);
+    }
+    .result-meta {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 500;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .result-desc {
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: rgba(243, 244, 251, 0.72);
+        margin-bottom: 16px;
+    }
+    .result-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* ─── player ─── */
+    .player-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+    .player-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .back-btn {
+        width: 40px;
+        height: 40px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.2s;
+        color: var(--text);
+    }
+    .back-btn:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: var(--surface2);
+    }
+    .player-heading {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 26px;
+        letter-spacing: 1px;
+    }
+    .player-subhead {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+    .iframe-container {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: var(--shadow);
+    }
+    .iframe-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .player-loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: #090A11;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+    .player-controls {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .source-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+    }
+    .source-btn {
+        padding: 7px 14px;
+        border-radius: 7px;
+        font-size: 12px;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: var(--surface);
+        color: var(--muted);
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.2s;
+    }
+    .source-btn.active {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(220, 165, 67, 0.05);
+    }
+    .source-btn:hover {
+        border-color: var(--gold);
+        color: var(--text);
+    }
+    .player-details {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 32px;
+        margin-top: 24px;
+    }
+    .player-info-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 34px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+    .player-info-meta {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 14px;
+        font-size: 13px;
+        color: var(--muted);
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .badge {
+        padding: 3px 10px;
+        border-radius: 6px;
+        background: var(--surface2);
+        color: var(--text);
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+    }
+    .badge-gold {
+        background: rgba(220, 165, 67, 0.1);
+        color: var(--gold);
+        border: 1px solid rgba(220, 165, 67, 0.15);
+    }
+    .player-desc {
+        font-size: 14px;
+        line-height: 1.65;
+        color: rgba(243, 244, 251, 0.74);
+    }
+
+    /* ─── episodes ─── */
+    #episodes-panel {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .episodes-panel-header {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .season-select-premium {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        padding: 10px 40px 10px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23DCA543' stroke-width='2.5' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 14px;
+    }
+    .season-select-premium:focus,
+    .season-select-premium:hover {
+        border-color: var(--gold);
+    }
+    .ep-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 380px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+    .ep-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 13px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    .ep-row::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%) scaleY(0.3);
+        width: 3px;
+        height: 100%;
+        background: var(--gold);
+        border-radius: 0 4px 4px 0;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+    .ep-row:hover {
+        background: var(--surface2);
+        border-color: rgba(255, 255, 255, 0.08);
+        transform: translateX(2px);
+    }
+    .ep-row.active {
+        background: rgba(220, 165, 67, 0.06);
+        border-color: rgba(220, 165, 67, 0.3);
+    }
+    .ep-row.active::before {
+        opacity: 1;
+        transform: translateY(-50%) scaleY(1);
+    }
+    .ep-num {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        background: var(--surface2);
+        padding: 4px 8px;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+    .ep-row.active .ep-num {
+        background: var(--gold);
+        color: #090A11;
+    }
+    .ep-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+    }
+    .ep-play-indicator {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.2s;
+        color: var(--gold);
+        flex-shrink: 0;
+    }
+    .ep-row:hover .ep-play-indicator,
+    .ep-row.active .ep-play-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ─── search tabs ─── */
+    .tabs-bar {
+        display: flex;
+        gap: 8px;
+        padding: 16px 32px 0;
+    }
+    .tab-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        background: var(--surface);
+        color: var(--muted);
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .tab-btn:hover {
+        color: var(--text);
+    }
+    .tab-btn.active {
+        background: var(--gold);
+        color: #090A11;
+        border-color: var(--gold);
+    }
+    .results-meta {
+        padding: 8px 32px 0;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* ─── profile ─── */
+    .profile-head {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+        padding: 24px 32px 0;
+    }
+    .stat-grid {
+        display: flex;
+        gap: 16px;
+        padding: 0 32px 24px;
+        flex-wrap: wrap;
+    }
+    .stat-box {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 18px;
+        min-width: 140px;
+        text-align: center;
+        flex: 1;
+        max-width: 180px;
+    }
+    .stat-val {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 32px;
+        color: var(--gold);
+        letter-spacing: 1px;
+    }
+    .stat-lbl {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ─── settings ─── */
+    .settings-container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px;
+    }
+    .settings-card {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+    }
+    .settings-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--text);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 12px;
+    }
+    .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .setting-row:last-child {
+        border-bottom: none;
+    }
+    .setting-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+    }
+    .setting-desc {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+    .setting-control {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .toggle {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: var(--surface3);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+        flex-shrink: 0;
+    }
+    .toggle.active {
+        background: var(--gold);
+    }
+    .toggle::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: var(--text);
+        border-radius: 50%;
+        transition: transform 0.3s;
+    }
+    .toggle.active::after {
+        transform: translateX(20px);
+        background: #090A11;
+    }
+
+    .settings-select {
+        background: var(--surface2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+    }
+    .settings-select:focus {
+        border-color: var(--gold);
+    }
+    .settings-danger-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .settings-danger-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* ─── footer ─── */
+    .premium-footer {
+        padding: 40px 32px;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        background: #05060A;
+        margin-top: 48px;
+    }
+    .footer-copyright {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    /* ─── modal ─── */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 6, 10, 0.85);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        backdrop-filter: blur(6px);
+    }
+    .modal-overlay.hidden {
+        display: none;
+    }
+    .modal {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 28px;
+        width: 100%;
+        max-width: 380px;
+        position: relative;
+        box-shadow: var(--shadow);
+    }
+    .modal h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 24px;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+        color: var(--text);
+    }
+    .modal p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 18px;
+    }
+    .form-group {
+        margin-bottom: 14px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .form-input {
+        width: 100%;
+        padding: 11px;
+        border-radius: 8px;
+        font-size: 13px;
+        background: var(--surface2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: 'Inter', sans-serif;
+    }
+    .form-input:focus {
+        border-color: var(--gold);
+    }
+    .form-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 20px;
+    }
+    .form-actions .btn {
+        flex: 1;
+    }
+    .modal-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--muted);
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+    }
+    .modal-close:hover {
+        color: var(--text);
+        background: var(--surface2);
+    }
+    .modal-switch {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 12px;
+        color: var(--muted);
+    }
+    .modal-switch a {
+        color: var(--gold);
+        cursor: pointer;
+        font-weight: 600;
+    }
+    .modal-switch a:hover {
+        color: var(--gold2);
+        text-decoration: underline;
+    }
+    .error-msg {
+        color: var(--danger);
+        font-size: 12px;
+        margin-top: 6px;
+        font-weight: 500;
+    }
+
+    /* ─── toast ─── */
+    #toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: rgba(18, 20, 32, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        padding: 10px 20px;
+        font-size: 13px;
+        z-index: 3000;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        box-shadow: var(--shadow);
+        opacity: 0;
+    }
+    #toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    #toast svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    #save-status {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: rgba(18, 20, 32, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    #save-status.visible {
+        opacity: 1;
+    }
+    #save-status .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+        transition: background 0.3s;
+    }
+    #save-status.saving .dot {
+        background: var(--gold);
+        animation: spin 0.8s linear infinite;
+    }
+    #save-status.saved .dot {
+        background: var(--success);
+        animation: none;
+    }
+
+    /* ─── responsive ─── */
+    @media(max-width:768px) {
+        #nav {
+            padding: 0 12px;
+            gap: 6px;
+        }
+        .nav-links {
+            display: none;
+        }
+        .search-bar {
+            max-width: 140px;
+        }
+        .section {
+            padding: 16px;
+        }
+        .results-grid {
+            padding: 12px;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+        .player-details {
+            grid-template-columns: 1fr;
+        }
+        .roulette-result {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .result-poster {
+            width: 140px;
+        }
+        .control-grid {
+            grid-template-columns: 1fr;
+        }
+        .spotlight-panel {
+            flex-direction: column;
+        }
+        .settings-container {
+            padding: 16px;
+        }
+        .hero-title {
+            font-size: 28px;
+        }
+        .lang-btn {
+            font-size: 10px;
+            padding: 4px 8px;
+        }
+    }
 </style>
 </head>
 <body>
 
-<nav id="nav">
-  <a class="logo" href="#/home"><span>Mux</span>IO</a>
-  <div class="nav-links">
-    <button class="nav-link active" onclick="navigateTo('home')">Home</button>
-    <button class="nav-link" onclick="navigateTo('movies')">Movies</button>
-    <button class="nav-link" onclick="navigateTo('series')">Series</button>
-    <button class="nav-link" onclick="navigateTo('watchlist')">Watchlist</button>
-  </div>
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <!-- FIX 1: autocomplete=off prevents browser from autofilling saved passwords into the search box -->
-    <input id="search-input" type="search" autocomplete="off" placeholder="Search movies & series..." oninput="handleSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
-  </div>
-  <div class="nav-right" id="nav-right">
-    <button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
-    <button class="btn btn-gold" onclick="openModal('register')">Sign Up</button>
-  </div>
-</nav>
-
-<div id="home-page" class="page active">
-  <div id="hero">
-    <div id="hero-bg"></div>
-    <div class="hero-content">
-      <div class="hero-tag">⚡ Trending Now</div>
-      <div class="hero-title" id="hero-title">Loading...</div>
-      <div class="hero-meta" id="hero-meta"></div>
-      <div class="hero-desc" id="hero-desc"></div>
-      <div class="hero-actions">
-        <button class="btn-play" onclick="playHeroItem()">▶ Play Now</button>
-        <button class="btn-more" onclick="viewHeroDetails()">ℹ More Info</button>
-      </div>
-    </div>
-  </div>
-  <div id="continue-section" class="section" style="display:none">
-    <div class="section-header"><div class="section-title">Continue <span>Watching</span></div></div>
-    <div class="carousel" id="continue-carousel"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">Trending <span>Movies</span></div><span class="see-all" onclick="navigateTo('movies')">See all →</span></div>
-    <div class="carousel" id="trending-movies"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">Popular <span>Series</span></div><span class="see-all" onclick="navigateTo('series')">See all →</span></div>
-    <div class="carousel" id="popular-series"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">Top <span>Rated</span></div></div>
-    <div class="carousel" id="top-rated"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">New <span>Releases</span></div></div>
-    <div class="carousel" id="new-releases"></div>
-  </div>
-</div>
-
-<div id="movies-page" class="page">
-  <div class="genres" id="movie-genres"></div>
-  <div class="results-grid" id="movies-grid"></div>
-  <div class="loader" id="movies-loader"><div class="spinner"></div></div>
-</div>
-
-<div id="series-page" class="page">
-  <div class="genres" id="series-genres"></div>
-  <div class="results-grid" id="series-grid"></div>
-  <div class="loader" id="series-loader"><div class="spinner"></div></div>
-</div>
-
-<div id="search-page" class="page">
-  <div class="type-tabs">
-    <button class="type-tab active" onclick="setSearchType('multi')">All</button>
-    <button class="type-tab" onclick="setSearchType('movie')">Movies</button>
-    <button class="type-tab" onclick="setSearchType('tv')">Series</button>
-  </div>
-  <div class="search-meta" id="search-meta"></div>
-  <div class="results-grid" id="search-results"></div>
-  <div class="loader" id="search-loader" style="display:none"><div class="spinner"></div></div>
-</div>
-
-<div id="watchlist-page" class="page">
-  <div class="section-header" style="padding:32px 48px 0"><div class="section-title">My <span>Watchlist</span></div></div>
-  <div class="watchlist-grid" id="watchlist-grid"></div>
-</div>
-
-<div id="player-page" class="page">
-  <div class="player-wrapper">
-    <div class="player-title-bar">
-      <div class="back-btn" onclick="window.history.back()">←</div>
-      <div class="player-heading" id="player-heading">Now Playing</div>
-      <div class="player-subheading" id="player-subheading"></div>
-    </div>
-    <div class="iframe-container">
-      <iframe id="player-iframe" allowfullscreen allow="fullscreen" referrerpolicy="no-referrer"></iframe>
-    </div>
-    <div class="iframe-notice"><strong>Note:</strong> If a source doesn't load, try switching to another below. Some sources may require disabling your ad blocker.</div>
-    <div class="player-controls">
-      <span class="source-label">Source:</span>
-      <div id="source-buttons"></div>
-      <div class="progress-note" id="progress-note" style="display:none">
-        <div class="progress-dot"></div> Progress autosaves every 3 min
-      </div>
-    </div>
-    <div class="player-details">
-      <div class="player-info">
-        <h1 id="player-title"></h1>
-        <div class="meta" id="player-meta"></div>
-        <p class="player-overview" id="player-overview"></p>
-      </div>
-      <div id="episodes-panel" style="display:none">
-        <div class="season-selector" id="season-selector"></div>
-        <div class="episodes-panel">
-          <h3>Episodes</h3>
-          <div class="ep-list" id="ep-list"></div>
+    <nav id="nav">
+        <a class="logo" href="#/home" id="logo-link"><span id="logo-brand">Cine</span>Vault</a>
+        <div class="nav-links">
+            <button class="nav-link active" data-i18n="nav_home" onclick="navigateTo('home')">Home</button>
+            <button class="nav-link nav-roulette-btn" data-i18n="nav_roulette" onclick="navigateTo('roulette')">🎲 Roulette</button>
+            <button class="nav-link" data-i18n="nav_watchlist" onclick="navigateTo('watchlist')">Watchlist</button>
         </div>
-      </div>
+        <div class="search-bar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="search-input" type="search" data-i18n-placeholder="search_placeholder" placeholder="Search movies &amp; shows..." oninput="handleSearch(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
+        </div>
+        <div class="nav-right" id="nav-right">
+            <button class="lang-btn" id="lang-toggle-btn" onclick="toggleLanguage()">🇷🇸 SR</button>
+            <button class="btn btn-gold btn-sm" data-i18n="sign_in" onclick="openModal('login')">Sign In</button>
+        </div>
+    </nav>
+
+    <!-- ===== HOME ===== -->
+    <div id="home-page" class="page active">
+        <div id="hero">
+            <div id="hero-bg"></div>
+            <div class="hero-content">
+                <div class="hero-tag" data-i18n="hero_trending">Trending Now</div>
+                <div class="hero-title" id="hero-title">Discover Something New</div>
+                <div class="hero-meta" id="hero-meta"></div>
+                <div class="hero-desc" id="hero-desc">Find your next favorite film or series.</div>
+                <div class="hero-actions">
+                    <button class="btn btn-gold" style="padding:12px 22px;font-size:14px;" onclick="playHeroItem()">
+                        <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><path d="M8 5v14l11-7z"/></svg>
+                        <span data-i18n="watch_now">Watch Now</span>
+                    </button>
+                    <button class="btn btn-outline" style="padding:12px 22px;font-size:14px;" onclick="viewHeroDetails()">
+                        <span data-i18n="more_info">More Info</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="continue-section" class="section" style="display:none">
+            <div class="section-header"><div class="section-title" data-i18n="continue_watching">Continue <span>Watching</span></div></div>
+            <div class="carousel" id="continue-carousel"></div>
+        </div>
+
+        <div id="spotlight-section" class="section">
+            <div class="section-header"><div class="section-title" data-i18n="tonights_pick">Tonight's <span>Pick</span></div></div>
+            <div id="spotlight-loading" class="loader"><div class="spinner"></div></div>
+            <div class="spotlight-panel" id="spotlight-container" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-header"><div class="section-title" data-i18n="hidden_gems">Hidden <span>Gems</span></div></div>
+            <div id="gems-loading" class="loader"><div class="spinner"></div></div>
+            <div class="carousel" id="hidden-gems"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title" data-i18n="random_discovery">Random <span>Discovery</span></div>
+                <span class="see-all" onclick="refreshRandomDiscovery()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    <span data-i18n="refresh">Refresh</span>
+                </span>
+            </div>
+            <div id="random-loading" class="loader"><div class="spinner"></div></div>
+            <div class="carousel" id="random-discovery"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-header"><div class="section-title" data-i18n="popular_week">Popular <span>This Week</span></div></div>
+            <div id="popular-loading" class="loader"><div class="spinner"></div></div>
+            <div class="carousel" id="popular-week"></div>
+        </div>
+
+        <div id="recommendation-section" class="section">
+            <div class="section-header"><div class="section-title" data-i18n="because_watched">Because You <span>Watched</span></div></div>
+            <div id="rec-loading" class="loader"><div class="spinner"></div></div>
+            <div class="carousel" id="because-watched"></div>
+        </div>
+
+        <!-- CATALOG EXPLORER -->
+        <div class="section" id="catalog-explorer-section">
+            <div class="section-header">
+                <div class="section-title" data-i18n="browse_everything">Browse <span>Everything</span></div>
+                <div style="display:flex;gap:6px;">
+                    <button class="tab-btn active" id="catalog-btn-all" data-i18n="all" onclick="setCatalogType('all')">All</button>
+                    <button class="tab-btn" id="catalog-btn-movie" data-i18n="movies" onclick="setCatalogType('movie')">Movies</button>
+                    <button class="tab-btn" id="catalog-btn-tv" data-i18n="series" onclick="setCatalogType('tv')">Series</button>
+                </div>
+            </div>
+            <div class="genres" id="catalog-genres" style="margin-bottom:16px;"></div>
+            <div id="catalog-loader" class="loader" style="display:none;"><div class="spinner"></div></div>
+            <div class="results-grid" id="catalog-grid" style="padding:0;"></div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div id="profile-page" class="page">
-  <div class="profile-header">
-    <div class="profile-avatar" id="profile-avatar"></div>
-    <div>
-      <div class="profile-name" id="profile-name-display"></div>
-      <div class="profile-email" id="profile-email-display"></div>
+    <!-- ===== SEARCH ===== -->
+    <div id="search-page" class="page">
+        <div class="tabs-bar">
+            <button class="tab-btn active" data-i18n="all" onclick="setSearchType('multi')">All</button>
+            <button class="tab-btn" data-i18n="movies" onclick="setSearchType('movie')">Movies</button>
+            <button class="tab-btn" data-i18n="series" onclick="setSearchType('tv')">Series</button>
+        </div>
+        <div class="results-meta" id="search-meta"></div>
+        <div id="search-loader" class="loader" style="display:none;"><div class="spinner"></div></div>
+        <div class="results-grid" id="search-results"></div>
     </div>
-    <button class="btn btn-outline" style="margin-left:auto" onclick="logout()">Sign Out</button>
-  </div>
-  <div class="stats-row" id="stats-row"></div>
-  <div class="section">
-    <div class="section-title" style="margin-bottom:20px">Continue <span>Watching</span></div>
-    <div class="carousel" id="profile-continue"></div>
-  </div>
-  <div class="section">
-    <div class="section-title" style="margin-bottom:20px">My <span>Watchlist</span></div>
-    <div class="carousel" id="profile-watchlist"></div>
-  </div>
-</div>
 
-<div class="modal-overlay hidden" id="auth-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="login-form">
-      <h2>Welcome <span style="color:var(--gold)">Back</span></h2>
-      <p>Sign in to sync your watchlist and progress.</p>
-      <div class="form-group">
-        <label>Email</label>
-        <input class="form-input" id="login-user" type="email" autocomplete="email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input class="form-input" id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <div class="error-msg" id="login-error"></div>
-      <div class="form-actions">
-        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-gold" onclick="doLogin()">Sign In</button>
-      </div>
-      <div class="modal-switch">No account? <a onclick="openModal('register')">Sign up free →</a></div>
+    <!-- ===== ROULETTE ===== -->
+    <div id="roulette-page" class="page">
+        <div class="roulette-container">
+            <div class="section-header" style="margin-bottom:8px;">
+                <div class="section-title" data-i18n="cinema_roulette">🎲 Cinema <span>Roulette</span></div>
+            </div>
+            <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" data-i18n="roulette_desc">Not sure what to watch? Set your filters and we'll pick something for you.</p>
+            <div class="bento-box">
+                <div class="control-grid">
+                    <div>
+                        <label class="control-lbl" data-i18n="type_label">Type</label>
+                        <select class="premium-select" id="roulette-media">
+                            <option value="both" data-i18n="both">Movies & Series</option>
+                            <option value="movie" data-i18n="movies_only">Movies only</option>
+                            <option value="tv" data-i18n="series_only">Series only</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-lbl" data-i18n="genre_label">Genre</label>
+                        <select class="premium-select" id="roulette-genre">
+                            <option value="any" data-i18n="any_genre">Any genre</option>
+                            <option value="28" data-i18n="genre_action">Action</option>
+                            <option value="35" data-i18n="genre_comedy">Comedy</option>
+                            <option value="18" data-i18n="genre_drama">Drama</option>
+                            <option value="27" data-i18n="genre_horror">Horror</option>
+                            <option value="878" data-i18n="genre_scifi">Sci-Fi</option>
+                            <option value="53" data-i18n="genre_thriller">Thriller</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="control-lbl" data-i18n="year_label">Year (optional)</label>
+                        <input class="premium-input" id="roulette-year" type="number" data-i18n-placeholder="any_year" placeholder="Any year" min="1950" max="2026">
+                    </div>
+                </div>
+                <button class="spin-action-btn" id="spin-button" onclick="spinRoulette()">
+                    <span data-i18n="spin_discover">🎲 Spin & Discover</span>
+                </button>
+            </div>
+            <div id="roulette-loader" class="loader" style="display:none;"><div class="spinner"></div></div>
+            <div class="roulette-result" id="roulette-result-card"></div>
+        </div>
     </div>
-    <div id="register-form" style="display:none">
-      <h2>Join <span style="color:var(--gold)">Muxio</span></h2>
-      <p>Create an account to save your progress and watchlist.</p>
-      <div class="form-group">
-        <label>Username</label>
-        <input class="form-input" id="reg-user" type="text" autocomplete="username" placeholder="cooluser123">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input class="form-input" id="reg-email" type="email" autocomplete="email" placeholder="your@email.com">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input class="form-input" id="reg-pass" type="password" autocomplete="new-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()">
-      </div>
-      <div class="error-msg" id="reg-error"></div>
-      <div class="form-actions">
-        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-gold" onclick="doRegister()">Create Account</button>
-      </div>
-      <div class="modal-switch">Already have an account? <a onclick="openModal('login')">Sign in →</a></div>
+
+    <!-- ===== WATCHLIST ===== -->
+    <div id="watchlist-page" class="page">
+        <div class="section-header" style="padding:24px 32px 0;">
+            <div class="section-title" data-i18n="my_watchlist">My <span>Watchlist</span></div>
+        </div>
+        <div class="results-grid" id="watchlist-grid"></div>
     </div>
-  </div>
-</div>
 
-<div id="toast"><span class="toast-icon" id="toast-icon">✅</span> <span id="toast-msg"></span></div>
+    <!-- ===== PLAYER ===== -->
+    <div id="player-page" class="page">
+        <div class="player-wrapper">
+            <div class="player-header">
+                <div class="back-btn" onclick="window.history.back()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;"><polyline points="15 18 9 12 15 6"/></svg>
+                </div>
+                <div>
+                    <div class="player-heading" id="player-heading" data-i18n="now_playing">Now Playing</div>
+                    <div class="player-subhead" id="player-subheading">Loading…</div>
+                </div>
+            </div>
+            <div class="iframe-container">
+                <div id="video-loader" class="player-loading-overlay"><div class="spinner"></div><span style="font-size:12px;margin-top:8px;color:var(--muted);" data-i18n="finding_stream">Finding the best stream…</span></div>
+                <iframe id="player-iframe" allowfullscreen allow="fullscreen" referrerpolicy="no-referrer"></iframe>
+            </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-const TMDB_BEARER = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzYzMwZjRiMThjZTc0ODlmMzgzNDE2YzEwMmI0MjgwMyIsIm5iZiI6MTc4MDk0NzE2MS4wMTIsInN1YiI6IjZhMjcxOGQ5NzUwMTQ4Y2IxZWMzMzQ1YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.2rw1VFYZHjDv8e7STG_HOBxqtYT6vTxmY5WvvoBebwY';
-const TMDB = 'https://api.themoviedb.org/3';
-const IMG = 'https://image.tmdb.org/t/p';
-const SB_URL = 'https://rxaykpiqmvwnoyrfoxmh.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4YXlrcGlxbXZ3bm95cmZveG1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTE5ODQsImV4cCI6MjA5NzAyNzk4NH0.WAnqt0FUzSX02t5rwJFzgOC1u2ALIaNanUZIVJ0H7sA';
-const sb = supabase.createClient(SB_URL, SB_KEY);
-const SOURCES = [
-  { name: 'VidCore', movie: id => `https://vidcore.net/movie/${id}`, tv: (id,s,e) => `https://vidcore.net/tv/${id}/${s}/${e}` },
-  { name: 'VidKing', movie: id => `https://www.vidking.net/embed/movie/${id}?color=F5A623`, tv: (id,s,e) => `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=F5A623` },
-  { name: 'VidSrc', movie: id => `https://vidsrc.to/embed/movie/${id}`, tv: (id,s,e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-  { name: '2Embed', movie: id => `https://www.2embed.cc/embed/${id}`, tv: (id,s,e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
-];
+            <div class="player-controls">
+                <span class="source-label" data-i18n="stream_source">Stream source:</span>
+                <div id="source-buttons" style="display:flex;gap:6px;"></div>
+            </div>
 
-// STATE
-let currentUser = null;
-let localProgress = {};
-let localWatchlist = [];
-let currentItem = null;
-let currentSeason = 1;
-let currentEpisode = 1;
-let searchTimeout = null;
-let searchType = 'multi';
-let heroItem = null;
-let progressInterval = null;
-let playerStartTime = null;
-let homeLoaded = false;
-let loadingHome = false;
-let moviePage = 1, movieGenre = 0, loadingMovies = false;
-let seriesPage = 1, seriesGenre = 0, loadingSeries = false;
+            <div class="player-details">
+                <div class="player-info">
+                    <h1 id="player-title" class="player-info-title"></h1>
+                    <div class="player-info-meta" id="player-meta"></div>
+                    <p class="player-desc" id="player-overview"></p>
+                </div>
+                <div id="episodes-panel" style="display:none;">
+                    <div class="episodes-panel-header">
+                        <span data-i18n="episodes">Episodes</span>
+                        <span id="episodes-count-badge" style="background:rgba(255,255,255,0.06);padding:2px 7px;border-radius:6px;font-size:10px;"></span>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <select class="season-select-premium" id="season-select-dropdown"></select>
+                    </div>
+                    <div class="ep-list" id="ep-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// TMDB
-async function tmdb(path, params = {}) {
-  const url = new URL(`${TMDB}${path}`);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-  try {
-    const r = await fetch(url.href, { signal: controller.signal, headers: { 'Authorization': `Bearer ${TMDB_BEARER}` } });
-    clearTimeout(timeout);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
-  } catch(e) { clearTimeout(timeout); console.warn(`TMDB ${path}:`, e.message); return null; }
-}
+    <!-- ===== PROFILE ===== -->
+    <div id="profile-page" class="page">
+        <div class="profile-head">
+            <div class="avatar" id="prof-avatar">M</div>
+            <div>
+                <h2 id="prof-username" class="logo" style="font-size:22px;" data-i18n="my_profile">My Profile</h2>
+                <span id="prof-email" style="font-size:13px;color:var(--muted);"></span>
+            </div>
+            <button class="btn btn-outline btn-sm" style="margin-left:auto;" data-i18n="sign_out" onclick="logout()">Sign Out</button>
+        </div>
+        <div class="stat-grid" id="prof-stats"></div>
+        <div class="section">
+            <div class="section-title" style="margin-bottom:12px;" data-i18n="keep_watching">Keep <span>Watching</span></div>
+            <div class="carousel" id="profile-continue"></div>
+        </div>
+    </div>
 
-// AUTH
-async function doRegister() {
-  const u = document.getElementById('reg-user').value.trim();
-  const e = document.getElementById('reg-email').value.trim();
-  const p = document.getElementById('reg-pass').value;
-  const err = document.getElementById('reg-error');
-  if (!u || !e || !p) { err.textContent = 'Please fill all fields.'; return; }
-  if (p.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-  const btn = document.querySelector('#register-form .btn-gold');
-  btn.textContent = 'Creating...'; btn.disabled = true;
-  const { data, error } = await sb.auth.signUp({ email: e, password: p, options: { data: { username: u } } });
-  btn.textContent = 'Create Account'; btn.disabled = false;
-  if (error) { err.textContent = error.message; return; }
-  if (data.session) { await onSignIn(data.session.user); closeModal(); toast('Welcome, ' + u + ' 🎉'); }
-  else { closeModal(); toast('Check your email to confirm your account.', 'info', 6000); }
-}
+    <!-- ===== SETTINGS ===== -->
+    <div id="settings-page" class="page">
+        <div class="settings-container">
+            <div class="section-header" style="margin-bottom:8px;">
+                <div class="section-title" data-i18n="settings_title">⚙️ <span>Settings</span></div>
+            </div>
+            <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" data-i18n="settings_desc">Customize your CineVault experience.</p>
 
-async function doLogin() {
-  const e = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
-  const err = document.getElementById('login-error');
-  const btn = document.querySelector('#login-form .btn-gold');
-  btn.textContent = 'Signing in...'; btn.disabled = true;
-  const { data, error } = await sb.auth.signInWithPassword({ email: e, password: p });
-  btn.textContent = 'Sign In'; btn.disabled = false;
-  if (error) { err.textContent = error.message; return; }
-  await onSignIn(data.user); closeModal();
-  toast('Welcome back, ' + (currentUser.username || e) + '! 👋');
-}
+            <div class="settings-card">
+                <div class="settings-card-title" data-i18n="playback_tracking">Playback &amp; Tracking</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="progress_tracking">Progress Tracking</div>
+                        <div class="setting-desc" data-i18n="progress_desc">Since streams are embedded, progress is estimated based on watch time.</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle" id="toggle-progress" onclick="toggleSetting('progressTracking')"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="autoplay_label">Autoplay</div>
+                        <div class="setting-desc" data-i18n="autoplay_desc">Automatically play when opening a movie or episode.</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle" id="toggle-autoplay" onclick="toggleSetting('autoplay')"></div>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="continue_section_label">Continue Watching Section</div>
+                        <div class="setting-desc" data-i18n="continue_section_desc">Show your in-progress titles on the home page.</div>
+                    </div>
+                    <div class="setting-control">
+                        <div class="toggle" id="toggle-continue" onclick="toggleSetting('showContinueWatching')"></div>
+                    </div>
+                </div>
+            </div>
 
-async function onSignIn(user) {
-  const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
-  currentUser = { id: user.id, email: user.email, username: profile?.username || user.email.split('@')[0] };
-  await loadCloudData();
-  updateNav();
-  renderContinueWatching();
-}
+            <div class="settings-card">
+                <div class="settings-card-title" data-i18n="stream_sources">Stream Sources</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" data-i18n="default_source">Default Source</div>
+                        <div class="setting-desc" data-i18n="default_source_desc">Your preferred stream source will be selected by default.</div>
+                    </div>
+                    <div class="setting-control">
+                        <select class="settings-select" id="default-source-select" onchange="updateDefaultSource(this.value)">
+                            <option value="0">VidCore</option>
+                            <option value="1">VidKing</option>
+                            <option value="2">VidSrc</option>
+                            <option value="3">2Embed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
 
-async function logout() {
-  stopProgressTracking();
-  await sb.auth.signOut();
-  currentUser = null; localProgress = {}; localWatchlist = [];
-  updateNav(); navigateTo('home'); toast('Signed out. See you next time!');
-}
+            <div class="settings-card" style="border-color:rgba(239,68,68,0.2);">
+                <div class="settings-card-title" style="color:var(--danger);" data-i18n="danger_zone">Danger Zone</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" style="color:var(--text);" data-i18n="clear_history">Clear Watch History</div>
+                        <div class="setting-desc" data-i18n="clear_history_desc">Permanently delete all your progress data. This cannot be undone.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="settings-danger-btn" data-i18n="clear_all" onclick="clearWatchHistory()">Clear All</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label" style="color:var(--text);" data-i18n="reset_settings_label">Reset All Settings</div>
+                        <div class="setting-desc" data-i18n="reset_settings_desc">Restore all settings to their default values.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="settings-danger-btn" data-i18n="reset" onclick="resetSettings()">Reset</button>
+                    </div>
+                </div>
+            </div>
 
-async function loadCloudData() {
-  if (!currentUser) return;
-  const [{ data: prog }, { data: wl }] = await Promise.all([
-    sb.from('progress').select('*').eq('user_id', currentUser.id),
-    sb.from('watchlist').select('*').eq('user_id', currentUser.id)
-  ]);
-  localProgress = {};
-  (prog || []).forEach(r => { localProgress[`${r.media_type}_${r.tmdb_id}`] = r; });
-  localWatchlist = wl || [];
-}
+            <div class="settings-card">
+                <div class="settings-card-title" data-i18n="about">About</div>
+                <div class="setting-row" style="border-bottom:none;">
+                    <div>
+                        <div class="setting-label">CineVault</div>
+                        <div class="setting-desc" data-i18n="version">Version 1.0 — Built with ❤️</div>
+                        <div class="setting-desc" style="margin-top:8px;" data-i18n="about_desc">Stream sources are provided by third-party services. CineVault does not host any content.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function updateNav() {
-  const nr = document.getElementById('nav-right');
-  if (currentUser) {
-    const initial = (currentUser.username || '?')[0].toUpperCase();
-    nr.innerHTML = `<div class="avatar" onclick="toggleAvatarMenu()">${initial}<div class="avatar-menu" id="avatar-menu">
-      <div class="avatar-item" onclick="navigateTo('profile')">👤 Profile</div>
-      <div class="avatar-item" onclick="navigateTo('watchlist')">🔖 Watchlist</div>
-      <div class="avatar-item danger" onclick="logout()">🚪 Sign Out</div>
-    </div></div>`;
-    renderContinueWatching();
-  } else {
-    nr.innerHTML = `<button class="btn btn-outline" onclick="openModal('login')">Sign In</button><button class="btn btn-gold" onclick="openModal('register')">Sign Up</button>`;
-  }
-}
-function toggleAvatarMenu() { document.getElementById('avatar-menu')?.classList.toggle('open'); }
-document.addEventListener('click', e => { if (!e.target.closest('.avatar')) document.getElementById('avatar-menu')?.classList.remove('open'); });
+    <!-- ===== AUTH MODAL ===== -->
+    <div class="modal-overlay hidden" id="auth-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div id="login-form">
+                <h2 id="modal-title" data-i18n="welcome_back">Welcome Back</h2>
+                <p id="modal-desc" data-i18n="sign_in_desc">Sign in to save your progress and watchlist.</p>
+                <div class="form-group">
+                    <label data-i18n="email">Email</label>
+                    <input class="form-input" id="auth-email" type="email" data-i18n-placeholder="email_placeholder" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="password">Password</label>
+                    <input class="form-input" id="auth-password" type="password" data-i18n-placeholder="password_placeholder" placeholder="••••••••" onkeydown="if(event.key==='Enter')submitAuthForm()">
+                </div>
+                <div class="error-msg" id="auth-error"></div>
+                <div class="form-actions">
+                    <button class="btn btn-outline" data-i18n="cancel" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-gold" id="btn-login" data-i18n="sign_in" onclick="submitAuthForm()">Sign In</button>
+                </div>
+                <div class="modal-switch" id="modal-switch-row">New here? <a onclick="openModal('register')" data-i18n="create_account">Create account</a></div>
+            </div>
+        </div>
+    </div>
 
-// PROGRESS TRACKING
-function startProgressTracking(item, s, ep) {
-  stopProgressTracking();
-  playerStartTime = Date.now();
-  if (!currentUser) return;
-  document.getElementById('progress-note').style.display = 'flex';
-  progressInterval = setInterval(() => saveProgress(item, s, ep), 3 * 60 * 1000);
-}
+    <div id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+    <div id="save-status"><div class="dot"></div><span id="save-status-text">Saving…</span></div>
 
-function stopProgressTracking() {
-  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
-  // FIX 3: clear iframe so video stops playing when leaving player
-  if (currentItem && currentUser && playerStartTime) {
-    const snapshot = playerStartTime; // capture before nulling
-    playerStartTime = null;
-    saveProgressWithStart(currentItem, currentSeason, currentEpisode, snapshot);
-  } else {
-    playerStartTime = null;
-  }
-}
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">
+    </script>
+    <script>
+        // ─── BLOCK POPUPS ──────────────────────────────────────
+        window.open = function() {
+            console.log("Popup blocked by site policy");
+            return null;
+        };
+        document.addEventListener('click', function(event) {
+            if (event.target.tagName === 'A' && event.target.target === '_blank') {
+                event.preventDefault();
+            }
+        }, true);
 
-async function saveProgressWithStart(item, s, ep, startTime) {
-  if (!currentUser || !item) return;
-  const key = `${item.media_type||'movie'}_${item.id}`;
-  const existing = localProgress[key];
-  const watchedMs = Math.max(0, Date.now() - startTime);
-  // FIX 2: progress accumulates correctly; assume avg 90min runtime
-  const addedPct = (watchedMs / (90 * 60 * 1000)) * 100;
-  const newPct = Math.min((existing?.progress_pct || 0) + addedPct, 99);
-  const row = {
-    user_id: currentUser.id, media_type: item.media_type || 'movie',
-    tmdb_id: item.id, item_data: item, season: s, episode: ep,
-    progress_pct: newPct, updated_at: new Date().toISOString()
-  };
-  localProgress[key] = { ...row };
-  renderContinueWatching(); // update UI immediately
-  await sb.from('progress').upsert(row, { onConflict: 'user_id,media_type,tmdb_id' });
-  toast('Progress saved ✅', 'success', 1500);
-}
+        // ─── TMDB ──────────────────────────────────────────────
+        const TMDB_BEARER =
+            'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzYzMwZjRiMThjZTc0ODlmMzgzNDE2YzEwMmI0MjgwMyIsIm5iZiI6MTc4MDk0NzE2MS4wMTIsInN1YiI6IjZhMjcxOGQ5NzUwMTQ4Y2IxZWMzMzQ1YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.2rw1VFYZHjDv8e7STG_HOBxqtYT6vTxmY5WvvoBebwY';
+        const TMDB = 'https://api.themoviedb.org/3';
+        const IMG = 'https://image.tmdb.org/t/p';
+        const SB_URL = 'https://uxndtskeqcbddqvwiurd.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4bmR0c2tlcWNiZGRxdndpdXJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2NDUxNDEsImV4cCI6MjA5NzIyMTE0MX0.V2hhYxcuS7plj7NaHizab5qP7psveI85-ksKCexRIK4';
+        const sb = supabase.createClient(SB_URL, SB_KEY);
 
-async function saveProgress(item, s, ep) {
-  if (!currentUser || !item || !playerStartTime) return;
-  const snapshot = playerStartTime;
-  playerStartTime = Date.now(); // reset for next interval
-  await saveProgressWithStart(item, s, ep, snapshot);
-}
+        // ─── SOURCES ──────────────────────────────────────────
+        const SOURCES = [
+            { name: 'VidCore', movie: id => `https://vidcore.net/movie/${id}`, tv: (id, s, e) =>
+                    `https://vidcore.net/tv/${id}/${s}/${e}` },
+            { name: 'VidKing', movie: id => `https://www.vidking.net/embed/movie/${id}?color=F5A623`, tv: (id, s, e) =>
+                    `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=F5A623` },
+            { name: 'VidSrc', movie: id => `https://vidsrc.to/embed/movie/${id}`, tv: (id, s, e) =>
+                    `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+            { name: '2Embed', movie: id => `https://www.2embed.cc/embed/${id}`, tv: (id, s, e) =>
+                    `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
+        ];
 
-function getProgress(item) {
-  if (!currentUser || !item) return null;
-  const r = localProgress[`${item.media_type||'movie'}_${item.id}`];
-  if (!r) return null;
-  return { progress: r.progress_pct, season: r.season, episode: r.episode, updatedAt: new Date(r.updated_at).getTime(), item: r.item_data };
-}
+        // ─── TRANSLATIONS ──────────────────────────────────────
+        const LANG = {
+            en: {
+                nav_home: 'Home',
+                nav_roulette: '🎲 Roulette',
+                nav_watchlist: 'Watchlist',
+                sign_in: 'Sign In',
+                sign_out: 'Sign Out',
+                search_placeholder: 'Search movies & shows…',
+                hero_trending: 'Trending Now',
+                watch_now: 'Watch Now',
+                more_info: 'More Info',
+                continue_watching: 'Continue <span>Watching</span>',
+                tonights_pick: "Tonight's <span>Pick</span>",
+                hidden_gems: 'Hidden <span>Gems</span>',
+                random_discovery: 'Random <span>Discovery</span>',
+                refresh: 'Refresh',
+                popular_week: 'Popular <span>This Week</span>',
+                because_watched: 'Because You <span>Watched</span>',
+                browse_everything: 'Browse <span>Everything</span>',
+                all: 'All',
+                movies: 'Movies',
+                series: 'Series',
+                cinema_roulette: '🎲 Cinema <span>Roulette</span>',
+                roulette_desc: 'Not sure what to watch? Set your filters and we\'ll pick something for you.',
+                type_label: 'Type',
+                both: 'Movies & Series',
+                movies_only: 'Movies only',
+                series_only: 'Series only',
+                genre_label: 'Genre',
+                any_genre: 'Any genre',
+                genre_action: 'Action',
+                genre_comedy: 'Comedy',
+                genre_drama: 'Drama',
+                genre_horror: 'Horror',
+                genre_scifi: 'Sci-Fi',
+                genre_thriller: 'Thriller',
+                year_label: 'Year (optional)',
+                any_year: 'Any year',
+                spin_discover: '🎲 Spin & Discover',
+                my_watchlist: 'My <span>Watchlist</span>',
+                now_playing: 'Now Playing',
+                stream_source: 'Stream source:',
+                episodes: 'Episodes',
+                finding_stream: 'Finding the best stream…',
+                settings_title: '⚙️ <span>Settings</span>',
+                settings_desc: 'Customize your CineVault experience.',
+                playback_tracking: 'Playback & Tracking',
+                progress_tracking: 'Progress Tracking',
+                progress_desc: 'Since streams are embedded, progress is estimated based on watch time.',
+                autoplay_label: 'Autoplay',
+                autoplay_desc: 'Automatically play when opening a movie or episode.',
+                continue_section_label: 'Continue Watching Section',
+                continue_section_desc: 'Show your in-progress titles on the home page.',
+                stream_sources: 'Stream Sources',
+                default_source: 'Default Source',
+                default_source_desc: 'Your preferred stream source will be selected by default.',
+                danger_zone: 'Danger Zone',
+                clear_history: 'Clear Watch History',
+                clear_history_desc: 'Permanently delete all your progress data. This cannot be undone.',
+                clear_all: 'Clear All',
+                reset_settings_label: 'Reset All Settings',
+                reset_settings_desc: 'Restore all settings to their default values.',
+                reset: 'Reset',
+                about: 'About',
+                version: 'Version 1.0 — Built with ❤️',
+                about_desc: 'Stream sources are provided by third-party services. CineVault does not host any content.',
+                my_profile: 'My Profile',
+                keep_watching: 'Keep <span>Watching</span>',
+                welcome_back: 'Welcome Back',
+                sign_in_desc: 'Sign in to save your progress and watchlist.',
+                email: 'Email',
+                email_placeholder: 'you@example.com',
+                password: 'Password',
+                password_placeholder: '••••••••',
+                cancel: 'Cancel',
+                create_account: 'Create account',
+                toast_signed_in: 'Signed in',
+                toast_signed_out: 'Signed out',
+                toast_account_created: 'Account created',
+                toast_removed_watchlist: 'Removed from watchlist',
+                toast_added_watchlist: 'Added to watchlist',
+                toast_removed_history: 'Removed from history',
+                toast_heres_pick: 'Here\'s your pick!',
+                toast_could_not_load: 'Could not load this title',
+                toast_no_results: 'No results for these filters',
+                toast_progress_saved: 'Progress saved',
+                toast_saved: 'Saved',
+                toast_enabled: 'enabled',
+                toast_disabled: 'disabled',
+                toast_history_cleared: 'Watch history cleared',
+                toast_settings_reset: 'Settings reset to defaults',
+                toast_default_source: 'Default source updated',
+                toast_picked_up: 'Picked up from {pct}%',
+            },
+            sr: {
+                nav_home: 'Početna',
+                nav_roulette: '🎲 Rulet',
+                nav_watchlist: 'Lista za gledanje',
+                sign_in: 'Prijava',
+                sign_out: 'Odjava',
+                search_placeholder: 'Pretraži filmove i serije…',
+                hero_trending: 'Trenutno popularno',
+                watch_now: 'Gledaj sada',
+                more_info: 'Više informacija',
+                continue_watching: 'Nastavi <span>sa gledanjem</span>',
+                tonights_pick: 'Večerašnji <span>izbor</span>',
+                hidden_gems: 'Skriveni <span>dragulji</span>',
+                random_discovery: 'Nasumično <span>otkriće</span>',
+                refresh: 'Osveži',
+                popular_week: 'Popularno <span>ove nedelje</span>',
+                because_watched: 'Zato što ste <span>gledali</span>',
+                browse_everything: 'Pregledajte <span>sve</span>',
+                all: 'Sve',
+                movies: 'Filmovi',
+                series: 'Serije',
+                cinema_roulette: '🎲 Bioskopski <span>rulet</span>',
+                roulette_desc: 'Niste sigurni šta da gledate? Postavite filtere i mi ćemo izabrati nešto za vas.',
+                type_label: 'Tip',
+                both: 'Filmovi i serije',
+                movies_only: 'Samo filmovi',
+                series_only: 'Samo serije',
+                genre_label: 'Žanr',
+                any_genre: 'Bilo koji žanr',
+                genre_action: 'Akcija',
+                genre_comedy: 'Komedija',
+                genre_drama: 'Drama',
+                genre_horror: 'Horor',
+                genre_scifi: 'Naučna fantastika',
+                genre_thriller: 'Triler',
+                year_label: 'Godina (opciono)',
+                any_year: 'Bilo koja godina',
+                spin_discover: '🎲 Okreni i otkrij',
+                my_watchlist: 'Moja <span>lista za gledanje</span>',
+                now_playing: 'Trenutno se prikazuje',
+                stream_source: 'Izvor strima:',
+                episodes: 'Epizode',
+                finding_stream: 'Tražimo najbolji strim…',
+                settings_title: '⚙️ <span>Podešavanja</span>',
+                settings_desc: 'Prilagodite svoje CineVault iskustvo.',
+                playback_tracking: 'Reprodukcija i praćenje',
+                progress_tracking: 'Praćenje napretka',
+                progress_desc: 'Pošto su strimovi ugrađeni, napredak se procenjuje na osnovu vremena gledanja.',
+                autoplay_label: 'Automatska reprodukcija',
+                autoplay_desc: 'Automatski pokreni kada otvorite film ili epizodu.',
+                continue_section_label: 'Sekcija "Nastavi sa gledanjem"',
+                continue_section_desc: 'Prikaži naslove u toku na početnoj strani.',
+                stream_sources: 'Izvori strimova',
+                default_source: 'Podrazumevani izvor',
+                default_source_desc: 'Vaš omiljeni izvor strima će biti podrazumevano izabran.',
+                danger_zone: 'Opasna zona',
+                clear_history: 'Obriši istoriju gledanja',
+                clear_history_desc: 'Trajno obrišite sve podatke o napretku. Ova radnja se ne može poništiti.',
+                clear_all: 'Obriši sve',
+                reset_settings_label: 'Resetuj sva podešavanja',
+                reset_settings_desc: 'Vrati sva podešavanja na podrazumevane vrednosti.',
+                reset: 'Resetuj',
+                about: 'O aplikaciji',
+                version: 'Verzija 1.0 — Napravljeno sa ❤️',
+                about_desc: 'Izvori strimova su obezbeđeni od strane trećih lica. CineVault ne hostuje nikakav sadržaj.',
+                my_profile: 'Moj profil',
+                keep_watching: 'Nastavi da <span>gledaš</span>',
+                welcome_back: 'Dobrodošli nazad',
+                sign_in_desc: 'Prijavite se da biste sačuvali napredak i listu za gledanje.',
+                email: 'Email',
+                email_placeholder: 'vi@primer.com',
+                password: 'Lozinka',
+                password_placeholder: '••••••••',
+                cancel: 'Otkaži',
+                create_account: 'Napravite nalog',
+                toast_signed_in: 'Prijavljeni ste',
+                toast_signed_out: 'Odjavljeni ste',
+                toast_account_created: 'Nalog je napravljen',
+                toast_removed_watchlist: 'Uklonjeno sa liste',
+                toast_added_watchlist: 'Dodato na listu',
+                toast_removed_history: 'Uklonjeno iz istorije',
+                toast_heres_pick: 'Evo vašeg izbora!',
+                toast_could_not_load: 'Nije moguće učitati naslov',
+                toast_no_results: 'Nema rezultata za ove filtere',
+                toast_progress_saved: 'Napredak je sačuvan',
+                toast_saved: 'Sačuvano',
+                toast_enabled: 'omogućeno',
+                toast_disabled: 'onemogućeno',
+                toast_history_cleared: 'Istorija gledanja obrisana',
+                toast_settings_reset: 'Podešavanja vraćena na podrazumevana',
+                toast_default_source: 'Podrazumevani izvor ažuriran',
+                toast_picked_up: 'Nastavljamo od {pct}%',
+            }
+        };
 
-// WATCHLIST
-function isInWatchlist(id) { return localWatchlist.some(x => x.tmdb_id === id); }
-async function toggleWatchlist(item, btn) {
-  if (!currentUser) { openModal('login'); return; }
-  const idx = localWatchlist.findIndex(x => x.tmdb_id === item.id);
-  if (idx > -1) {
-    const row = localWatchlist[idx]; localWatchlist.splice(idx, 1);
-    if (btn) btn.textContent = '+ Watchlist';
-    await sb.from('watchlist').delete().eq('id', row.id); toast('Removed from watchlist');
-  } else {
-    const row = { user_id: currentUser.id, tmdb_id: item.id, media_type: item.media_type||'movie', item_data: item };
-    const { data } = await sb.from('watchlist').insert(row).select().single();
-    if (data) localWatchlist.push(data);
-    if (btn) btn.textContent = '✓ In Watchlist'; toast('Added to watchlist 🔖');
-  }
-}
+        let currentLang = 'en';
 
-// ROUTING
-function parseRoute(hash) {
-  if (!hash || hash === '#/' || hash === '#') return { page: 'home', params: {} };
-  const path = hash.replace(/^#\//, '');
-  const segments = path.split('?')[0].split('/');
-  const page = segments[0] || 'home';
-  const params = {};
-  if (page === 'player' && segments.length >= 3) { params.type = segments[1]; params.id = segments[2]; }
-  else if (page === 'search') { const usp = new URLSearchParams(path.split('?')[1]||''); params.query = usp.get('q')||''; params.type = usp.get('type')||'multi'; }
-  return { page, params };
-}
-function buildURL(page, params={}) {
-  if (page === 'player') return `#/player/${params.type}/${params.id}`;
-  if (page === 'search') return `#/search?q=${encodeURIComponent(params.query||'')}&type=${params.type||searchType}`;
-  return `#/${page}`;
-}
-function navigateTo(page, params={}, replace=false) {
-  const url = buildURL(page, params);
-  replace ? window.history.replaceState({page,params}, '', url) : window.history.pushState({page,params}, '', url);
-  loadPage(page, params);
-}
-window.addEventListener('popstate', e => {
-  if (e.state) loadPage(e.state.page, e.state.params);
-  else { const {page,params} = parseRoute(window.location.hash); loadPage(page, params); }
-});
-function loadPage(page, params={}) {
-  // Only clear iframe when leaving player, not when entering it
-  if (document.querySelector('.page.active')?.id === 'player-page' && page !== 'player') {
-    const iframe = document.getElementById('player-iframe');
-    if (iframe) iframe.src = '';
-  }
-  stopProgressTracking();
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  const el = document.getElementById(page + '-page');
-  if (el) el.classList.add('active');
-  const link = document.querySelector(`.nav-link[onclick*="'${page}'"]`);
-  if (link) link.classList.add('active');
-  window.scrollTo(0, 0);
-  switch(page) {
-    case 'home': loadHome(); break;
-    case 'movies': loadMovies(true); break;
-    case 'series': loadSeries(true); break;
-    case 'search':
-      searchType = params.type || 'multi';
-      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`.type-tab[onclick*="'${searchType}'"]`)?.classList.add('active');
-      document.getElementById('search-input').value = params.query || '';
-      fetchSearchResults(params.query || '');
-      break;
-    case 'player': loadPlayerPage(params.type, params.id); break;
-    case 'watchlist': loadWatchlist(); break;
-    case 'profile': loadProfile(); break;
-    default: loadHome(); break;
-  }
-}
+        function t(key, params) {
+            let val = LANG[currentLang]?.[key] || LANG.en[key] || key;
+            if (params) {
+                for (const [k, v] of Object.entries(params)) {
+                    val = val.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+                }
+            }
+            return val;
+        }
 
-// HOME
-async function loadHome(force=false) {
-  if (loadingHome) return;
-  if (homeLoaded && !force) { renderContinueWatching(); return; }
-  loadingHome = true;
-  try {
-    const [trending, topRated, nowPlaying, popularTV] = await Promise.all([
-      tmdb('/trending/movie/week'), tmdb('/movie/top_rated'),
-      tmdb('/movie/now_playing'), tmdb('/tv/popular'),
-    ]);
-    if (!trending?.results?.length) throw new Error('No results');
-    heroItem = trending.results[0];
-    renderHero(heroItem);
-    renderCarousel('trending-movies', trending.results.slice(0,15), 'movie');
-    renderCarousel('top-rated', topRated?.results?.slice(0,15)||[], 'movie');
-    renderCarousel('new-releases', nowPlaying?.results?.slice(0,15)||[], 'movie');
-    renderCarousel('popular-series', popularTV?.results?.slice(0,15)||[], 'tv');
-    homeLoaded = true;
-  } catch(e) {
-    console.error('loadHome:', e);
-    document.getElementById('hero-title').textContent = 'Could not load content';
-    document.getElementById('hero-desc').textContent = 'Check your connection and refresh.';
-  } finally {
-    loadingHome = false;
-    renderContinueWatching();
-  }
-}
+        // ─── LANGUAGE DETECTION ──────────────────────────────
+        function detectLanguageFromPath() {
+            const path = window.location.pathname;
+            // Check if path starts with /sr or is exactly /sr
+            if (path === '/sr' || path.startsWith('/sr/') || path === '/sr/') {
+                return 'sr';
+            }
+            return 'en';
+        }
 
-function renderHero(item) {
-  if (!item) return;
-  document.getElementById('hero-bg').style.backgroundImage = `url(${IMG}/original${item.backdrop_path})`;
-  document.getElementById('hero-title').textContent = item.title || item.name;
-  document.getElementById('hero-desc').textContent = (item.overview||'').substring(0,180) + ((item.overview||'').length>180?'…':'');
-  document.getElementById('hero-meta').innerHTML = `<span class="hero-rating">⭐ ${item.vote_average?.toFixed(1)||'N/A'}</span>
-    <div class="dot"></div><span>${(item.release_date||item.first_air_date||'').split('-')[0]||''}</span>
-    <div class="dot"></div><span>${item.title?'Movie':'Series'}</span>`;
-}
-function playHeroItem() { if (heroItem) goToItem({...heroItem, media_type: heroItem.title?'movie':'tv'}); }
-function viewHeroDetails() { if (heroItem) goToItem({...heroItem, media_type: heroItem.title?'movie':'tv'}); }
+        function setLanguage(lang, persist = true) {
+            currentLang = lang;
+            if (persist) {
+                try { localStorage.setItem('cinevault_lang', lang); } catch (e) {}
+            }
+            applyTranslations();
+            updateLangToggle();
+        }
 
-function renderCarousel(id, items, type) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = items.map(item => cardHTML({...item, media_type: type})).join('');
-}
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const val = t(key);
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    if (el.getAttribute('data-i18n-placeholder') !== null) {
+                        el.placeholder = val;
+                    } else {
+                        el.value = val;
+                    }
+                } else {
+                    el.innerHTML = val;
+                }
+            });
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                const phKey = searchInput.getAttribute('data-i18n-placeholder');
+                if (phKey) searchInput.placeholder = t(phKey);
+            }
+            const logoBrand = document.getElementById('logo-brand');
+            if (logoBrand) {
+                if (currentLang === 'sr') {
+                    logoBrand.textContent = 'Bio';
+                } else {
+                    logoBrand.textContent = 'Cine';
+                }
+            }
+            updateModalTexts();
+            // Update genre pills
+            renderCatalogGenres();
+        }
 
-function cardHTML(item) {
-  const title = item.title || item.name;
-  const year = (item.release_date || item.first_air_date || '').split('-')[0];
-  const poster = item.poster_path ? `${IMG}/w300${item.poster_path}` : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300"><rect width="200" height="300" fill="%23161C36"/><text x="100" y="150" text-anchor="middle" fill="%236B7299" font-size="40">🎬</text></svg>';
-  const prog = getProgress(item);
-  const pct = prog ? Math.round(prog.progress) : 0;
-  const esc = JSON.stringify(item).replace(/"/g,'&quot;');
-  return `<div class="card fade-in" onclick="goToItem(${esc})">
-    <img class="card-img" src="${poster}" alt="${title}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22300%22><rect width=%22200%22 height=%22300%22 fill=%22%23161C36%22/><text x=%22100%22 y=%22150%22 text-anchor=%22middle%22 fill=%22%236B7299%22 font-size=%2240%22>🎬</text></svg>'">
-    <div class="card-overlay"><div class="card-play-btn">▶</div><div class="card-label">${title}</div><div class="card-meta">${year}${item.vote_average?' · ⭐ '+item.vote_average.toFixed(1):''}</div></div>
-    ${pct>0?`<div class="card-progress"><div class="card-progress-bar" style="width:${pct}%"></div></div>`:''}
-    <div class="card-info"><div class="card-title">${title}</div><div class="card-year">${year}</div>${item.vote_average?`<div class="card-rating">⭐ ${item.vote_average.toFixed(1)}</div>`:''}</div>
-  </div>`;
-}
+        function updateModalTexts() {
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            const btn = document.getElementById('btn-login');
+            const switchRow = document.getElementById('modal-switch-row');
+            const mode = authMode || 'login';
+            if (mode === 'login') {
+                if (title) title.textContent = t('welcome_back');
+                if (desc) desc.textContent = t('sign_in_desc');
+                if (btn) btn.textContent = t('sign_in');
+                if (switchRow) switchRow.innerHTML =
+                    `New here? <a onclick="openModal('register')" data-i18n="create_account">${t('create_account')}</a>`;
+            } else {
+                if (title) title.textContent = t('create_account');
+                if (desc) desc.textContent = 'Sign up for free to track what you watch.';
+                if (btn) btn.textContent = 'Sign Up';
+                if (switchRow) switchRow.innerHTML =
+                    `Already have an account? <a onclick="openModal('login')" data-i18n="sign_in">${t('sign_in')}</a>`;
+            }
+        }
 
-// CONTINUE WATCHING
-function renderContinueWatching() {
-  const section = document.getElementById('continue-section');
-  const container = document.getElementById('continue-carousel');
-  if (!currentUser) { section.style.display='none'; return; }
-  const items = Object.values(localProgress)
-    .filter(r => r.progress_pct > 0 && r.progress_pct < 95)
-    .sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0,10);
-  if (!items.length) { section.style.display='none'; return; }
-  section.style.display='';
-  container.innerHTML = items.map(r => {
-    const item = r.item_data;
-    const title = item.title || item.name;
-    const backdrop = item.backdrop_path ? `${IMG}/w500${item.backdrop_path}` : '';
-    const sub = r.media_type==='tv' ? `S${r.season}E${r.episode}` : 'Movie';
-    // FIX 2: clamp pct to 1-99 so bar is always visible when item exists
-    const pct = Math.min(99, Math.max(1, Math.round(r.progress_pct)));
-    const key = `${r.media_type}_${r.tmdb_id}`;
-    const esc = JSON.stringify(item).replace(/"/g,'&quot;');
-    return `<div class="continue-card">
-      <img class="continue-img" src="${backdrop}" alt="${title}" onerror="this.style.background='var(--surface3)'">
-      <button class="continue-remove" onclick="removeProgress(event,'${key}')">✕</button>
-      <div class="continue-info" onclick="goToItem(${esc})">
-        <div class="continue-title">${title}</div>
-        <div class="continue-sub">${sub}</div>
-        <div class="continue-bar"><div class="continue-fill" style="width:${pct}%"></div></div>
-        <div class="continue-pct">${pct}% watched</div>
-      </div>
-    </div>`;
-  }).join('');
-}
+        function updateLangToggle() {
+            const btn = document.getElementById('lang-toggle-btn');
+            if (!btn) return;
+            if (currentLang === 'sr') {
+                btn.textContent = '🇬🇧 EN';
+                btn.classList.add('active-lang');
+            } else {
+                btn.textContent = '🇷🇸 SR';
+                btn.classList.remove('active-lang');
+            }
+        }
 
-async function removeProgress(e, key) {
-  e.stopPropagation();
-  if (!currentUser) return;
-  const r = localProgress[key];
-  if (!r) return;
-  delete localProgress[key];
-  renderContinueWatching();
-  await sb.from('progress').delete().eq('user_id', currentUser.id).eq('media_type', r.media_type).eq('tmdb_id', r.tmdb_id);
-  toast('Removed from continue watching');
-}
+        function toggleLanguage() {
+            const next = currentLang === 'en' ? 'sr' : 'en';
+            setLanguage(next);
+            renderContinueWatching();
+            if (document.getElementById('home-page').classList.contains('active')) {
+                renderCatalogGenres();
+            }
+            document.querySelectorAll('#roulette-page [data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (el.tagName === 'OPTION') {
+                    el.textContent = t(key);
+                }
+            });
+        }
 
-// MOVIES
-const MOVIE_GENRES = [{id:28,name:'Action'},{id:12,name:'Adventure'},{id:16,name:'Animation'},{id:35,name:'Comedy'},{id:80,name:'Crime'},{id:99,name:'Documentary'},{id:18,name:'Drama'},{id:10751,name:'Family'},{id:14,name:'Fantasy'},{id:36,name:'History'},{id:27,name:'Horror'},{id:10402,name:'Music'},{id:9648,name:'Mystery'},{id:10749,name:'Romance'},{id:878,name:'Sci-Fi'},{id:53,name:'Thriller'},{id:10752,name:'War'},{id:37,name:'Western'}];
-async function loadMovies(reset=true) {
-  if (reset) { moviePage=1; document.getElementById('movies-grid').innerHTML=''; }
-  if (reset) document.getElementById('movie-genres').innerHTML = `<div class="genre-pill active" onclick="filterMovies(0,this)">All</div>`+MOVIE_GENRES.map(g=>`<div class="genre-pill" onclick="filterMovies(${g.id},this)">${g.name}</div>`).join('');
-  loadingMovies=true;
-  const params={page:moviePage,sort_by:'popularity.desc'};
-  if (movieGenre) params.with_genres=movieGenre;
-  const data=await tmdb('/discover/movie',params);
-  if (data?.results) {
-    document.getElementById('movies-grid').innerHTML+=data.results.map(item=>cardHTML({...item,media_type:'movie'})).join('');
-    document.getElementById('movies-loader').style.display=moviePage>=data.total_pages?'none':'';
-  }
-  loadingMovies=false;
-}
-function filterMovies(id,el){movieGenre=id;document.querySelectorAll('#movie-genres .genre-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');loadMovies(true);}
+        // ─── SETTINGS ──────────────────────────────────────────
+        const DEFAULT_SETTINGS = {
+            progressTracking: true,
+            autoplay: true,
+            showContinueWatching: true,
+            defaultSource: 0
+        };
 
-const TV_GENRES = [{id:10759,name:'Action'},{id:16,name:'Animation'},{id:35,name:'Comedy'},{id:80,name:'Crime'},{id:99,name:'Documentary'},{id:18,name:'Drama'},{id:10765,name:'Sci-Fi'},{id:9648,name:'Mystery'},{id:10751,name:'Family'},{id:10762,name:'Kids'},{id:10763,name:'News'},{id:10764,name:'Reality'},{id:10766,name:'Soap'},{id:10767,name:'Talk'},{id:10768,name:'War'}];
-async function loadSeries(reset=true) {
-  if (reset) { seriesPage=1; document.getElementById('series-grid').innerHTML=''; }
-  if (reset) document.getElementById('series-genres').innerHTML=`<div class="genre-pill active" onclick="filterSeries(0,this)">All</div>`+TV_GENRES.map(g=>`<div class="genre-pill" onclick="filterSeries(${g.id},this)">${g.name}</div>`).join('');
-  loadingSeries=true;
-  const params={page:seriesPage,sort_by:'popularity.desc'};
-  if (seriesGenre) params.with_genres=seriesGenre;
-  const data=await tmdb('/discover/tv',params);
-  if (data?.results) {
-    document.getElementById('series-grid').innerHTML+=data.results.map(item=>cardHTML({...item,media_type:'tv'})).join('');
-    document.getElementById('series-loader').style.display=seriesPage>=data.total_pages?'none':'';
-  }
-  loadingSeries=false;
-}
-function filterSeries(id,el){seriesGenre=id;document.querySelectorAll('#series-genres .genre-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');loadSeries(true);}
+        function getSettings() {
+            try {
+                const raw = localStorage.getItem('flickpulse_settings');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    return { ...DEFAULT_SETTINGS, ...parsed };
+                }
+            } catch (e) {}
+            return { ...DEFAULT_SETTINGS };
+        }
 
-window.addEventListener('scroll',()=>{
-  const bottom=window.innerHeight+window.scrollY>=document.body.offsetHeight-300;
-  if(!bottom)return;
-  const active=document.querySelector('.page.active');
-  if(active?.id==='movies-page'&&!loadingMovies){moviePage++;loadMovies(false);}
-  if(active?.id==='series-page'&&!loadingSeries){seriesPage++;loadSeries(false);}
-});
+        function saveSettings() {
+            localStorage.setItem('flickpulse_settings', JSON.stringify(settings));
+        }
 
-// SEARCH
-function handleSearch(val) {
-  clearTimeout(searchTimeout);
-  if (!val.trim()) return;
-  searchTimeout = setTimeout(() => navigateTo('search', { query: val.trim(), type: searchType }), 400);
-}
-function doSearch() { const q=document.getElementById('search-input').value.trim(); if(q) navigateTo('search',{query:q,type:searchType}); }
-async function fetchSearchResults(query) {
-  if (!query) return;
-  document.getElementById('search-results').innerHTML='';
-  document.getElementById('search-loader').style.display='';
-  const data=await tmdb(`/search/${searchType}`,{query,include_adult:false});
-  document.getElementById('search-loader').style.display='none';
-  document.getElementById('search-meta').textContent=`${data?.total_results||0} results for "${query}"`;
-  const results=(data?.results||[]).filter(x=>x.poster_path||x.backdrop_path);
-  document.getElementById('search-results').innerHTML=results.map(item=>{
-    const type=item.media_type||(searchType==='multi'?(item.title?'movie':'tv'):searchType);
-    return cardHTML({...item,media_type:type});
-  }).join('');
-}
-function setSearchType(type){searchType=type;document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');const q=document.getElementById('search-input').value.trim();navigateTo('search',{query:q,type});}
+        let settings = getSettings();
 
-// PLAYER
-function goToItem(item) {
-  const type=item.media_type||(item.title?'movie':'tv');
-  navigateTo('player',{type,id:item.id});
-}
-async function loadPlayerPage(type,id) {
-  const details=await tmdb(`/${type==='movie'?'movie':'tv'}/${id}`);
-  if (!details) { toast('Failed to load media','error'); return; }
-  currentItem={...details,media_type:type};
-  const title=details.title||details.name;
-  document.getElementById('player-heading').textContent=title;
-  document.getElementById('player-title').textContent=title;
-  document.getElementById('player-overview').textContent=details.overview||'';
-  const year=(details.release_date||details.first_air_date||'').split('-')[0];
-  document.getElementById('player-meta').innerHTML=`<span class="badge gold">⭐ ${details.vote_average?.toFixed(1)||'N/A'}</span><span class="badge">${year}</span>${type==='movie'&&details.runtime?`<span class="badge">${Math.floor(details.runtime/60)}h ${details.runtime%60}m</span>`:''} ${(details.genres||[]).slice(0,3).map(g=>`<span class="badge">${g.name}</span>`).join('')}`;
-  const savedProg=getProgress(currentItem);
-  if (type==='tv') {
-    currentSeason=savedProg?.season||1; currentEpisode=savedProg?.episode||1;
-    await loadSeasons(details); document.getElementById('episodes-panel').style.display='';
-  } else {
-    currentSeason=1; currentEpisode=1;
-    document.getElementById('episodes-panel').style.display='none';
-    loadSource(type,id,1,1);
-  }
-  if (savedProg) toast(`Resuming from ${Math.round(savedProg.progress)}%`,'info');
-  startProgressTracking(currentItem,currentSeason,currentEpisode);
-}
-function loadSource(type,id,s,e){
-  document.getElementById('source-buttons').innerHTML=SOURCES.map((src,i)=>`<button class="source-btn ${i===0?'active':''}" onclick="setSource(${i},'${type}',${id},${s},${e})">${src.name}</button>`).join('');
-  setSource(0,type,id,s,e);
-}
-function setSource(idx,type,id,s,e){
-  document.querySelectorAll('.source-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
-  const src=SOURCES[idx];
-  document.getElementById('player-iframe').src=type==='movie'?src.movie(id):src.tv(id,s,e);
-  document.getElementById('player-subheading').textContent=`Source: ${src.name}`;
-}
-async function loadSeasons(details){
-  const n=details.number_of_seasons||1;
-  document.getElementById('season-selector').innerHTML=Array.from({length:n},(_,i)=>`<button class="season-btn ${currentSeason===i+1?'active':''}" onclick="selectSeason(${i+1},${details.id})">S${i+1}</button>`).join('');
-  await loadEpisodes(details.id,currentSeason);
-}
-async function loadEpisodes(seriesId,season){
-  const data=await tmdb(`/tv/${seriesId}/season/${season}`);
-  document.getElementById('ep-list').innerHTML=(data?.episodes||[]).map(ep=>`<div class="ep-row ${currentEpisode===ep.episode_number&&currentSeason===season?'active':''}" id="ep-row-${ep.episode_number}" onclick="selectEpisode(${ep.episode_number},${seriesId})"><div class="ep-num-badge">${ep.episode_number}</div><div><div class="ep-row-title">${ep.name||'Episode '+ep.episode_number}</div><div class="ep-row-meta">${ep.air_date||''} ${ep.runtime?'· '+ep.runtime+'min':''}</div></div></div>`).join('');
-  loadSource('tv',seriesId,season,currentEpisode);
-}
-async function selectSeason(s,seriesId){currentSeason=s;currentEpisode=1;document.querySelectorAll('.season-btn').forEach((b,i)=>b.classList.toggle('active',i===s-1));await loadEpisodes(seriesId,s);startProgressTracking(currentItem,currentSeason,currentEpisode);}
-function selectEpisode(ep,seriesId){currentEpisode=ep;document.querySelectorAll('.ep-row').forEach(r=>r.classList.remove('active'));document.getElementById('ep-row-'+ep)?.classList.add('active');loadSource('tv',seriesId,currentSeason,ep);startProgressTracking(currentItem,currentSeason,currentEpisode);document.getElementById('ep-row-'+ep)?.scrollIntoView({behavior:'smooth',block:'nearest'});}
+        function toggleSetting(key) {
+            settings[key] = !settings[key];
+            saveSettings();
+            updateSettingsUI();
+            if (key === 'showContinueWatching' || key === 'progressTracking') renderContinueWatching();
+            if (key === 'progressTracking') {
+                if (!settings.progressTracking) stopProgressTracking();
+                else if (currentItem) startProgressTracking(currentItem, currentSeason, currentEpisode);
+            }
+            const label = key.replace(/([A-Z])/g, ' $1').trim();
+            toast(`${label} ${settings[key] ? t('toast_enabled') : t('toast_disabled')}`);
+        }
 
-// WATCHLIST PAGE
-function loadWatchlist(){
-  const grid=document.getElementById('watchlist-grid');
-  if(!currentUser){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔒</div><div class="empty-title">Sign in required</div><div class="empty-desc">Create an account to save your watchlist.</div><br><button class="btn btn-gold" onclick="openModal('login')">Sign In</button></div>`;return;}
-  if(!localWatchlist.length){grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔖</div><div class="empty-title">Your watchlist is empty</div><div class="empty-desc">Browse movies and series and add them to your watchlist.</div></div>`;return;}
-  grid.innerHTML=localWatchlist.map(r=>cardHTML({...r.item_data,media_type:r.media_type})).join('');
-}
+        function updateDefaultSource(val) {
+            settings.defaultSource = parseInt(val);
+            saveSettings();
+            toast(t('toast_default_source'));
+        }
 
-// PROFILE PAGE
-function loadProfile(){
-  if(!currentUser){navigateTo('home');return;}
-  document.getElementById('profile-avatar').textContent=(currentUser.username||'?')[0].toUpperCase();
-  document.getElementById('profile-name-display').textContent=currentUser.username||currentUser.email;
-  document.getElementById('profile-email-display').textContent=currentUser.email;
-  const prog=Object.values(localProgress);
-  const watched=prog.filter(p=>p.progress_pct>=95).length;
-  document.getElementById('stats-row').innerHTML=`<div class="stat-card"><div class="stat-num">${prog.length}</div><div class="stat-label">Titles Started</div></div><div class="stat-card"><div class="stat-num">${watched}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-num">${localWatchlist.length}</div><div class="stat-label">In Watchlist</div></div>`;
-  const inProg=prog.filter(p=>p.progress_pct>0&&p.progress_pct<95).sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at)).slice(0,10);
-  document.getElementById('profile-continue').innerHTML=inProg.length?inProg.map(r=>cardHTML({...r.item_data,media_type:r.media_type})).join(''):`<div class="empty-state" style="padding:20px"><div class="empty-desc">Nothing in progress yet.</div></div>`;
-  document.getElementById('profile-watchlist').innerHTML=localWatchlist.length?localWatchlist.map(r=>cardHTML({...r.item_data,media_type:r.media_type})).join(''):`<div class="empty-state" style="padding:20px"><div class="empty-desc">Your watchlist is empty.</div></div>`;
-}
+        function updateSettingsUI() {
+            ['progressTracking', 'autoplay', 'showContinueWatching'].forEach(key => {
+                const el = document.getElementById(`toggle-${key}`);
+                if (el) el.classList.toggle('active', settings[key]);
+            });
+            const sel = document.getElementById('default-source-select');
+            if (sel) sel.value = settings.defaultSource;
+        }
 
-// MODALS
-function openModal(type){document.getElementById('auth-modal').classList.remove('hidden');document.getElementById('login-form').style.display=type==='login'?'':'none';document.getElementById('register-form').style.display=type==='register'?'':'none';document.getElementById('login-error').textContent='';document.getElementById('reg-error').textContent='';}
-function closeModal(){document.getElementById('auth-modal').classList.add('hidden');}
-document.getElementById('auth-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+        function clearWatchHistory() {
+            if (!confirm(t('clear_history_desc'))) return;
+            localProgress = {};
+            saveLocalProgressState();
+            renderContinueWatching();
+            toast(t('toast_history_cleared'));
+        }
 
-// TOAST
-function toast(msg,type='success',dur=3000){
-  const icon=type==='success'?'✅':type==='info'?'ℹ️':'❌';
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
-  const t=document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
-}
+        function resetSettings() {
+            if (!confirm(t('reset_settings_desc'))) return;
+            settings = { ...DEFAULT_SETTINGS };
+            saveSettings();
+            updateSettingsUI();
+            renderContinueWatching();
+            toast(t('toast_settings_reset'));
+        }
 
-// INIT
-async function init(){
-  try { const {data:{session}}=await sb.auth.getSession(); if(session?.user) await onSignIn(session.user); }
-  catch(e){ console.warn('Session restore:',e); }
-  updateNav();
-  const {page,params}=parseRoute(window.location.hash);
-  // Use replaceState + loadPage directly to avoid navigateTo pushing duplicate history entry
-  window.history.replaceState({page,params}, '', window.location.hash||'#/home');
-  loadPage(page, params);
-}
-init();
+        // ─── GLOBAL STATE ──────────────────────────────────────
+        let currentUser = null;
+        let localProgress = {};
+        let localWatchlist = [];
+        let currentItem = null;
+        let currentSeason = 1;
+        let currentEpisode = 1;
+        let searchTimeout = null;
+        let searchType = 'multi';
+        let heroItem = null;
+        let homeLoaded = false;
+        let catalogGenre = 0;
+        let catalogType = 'all';
+        let catalogPage = 1;
+        let catalogLoading = false;
+        let catalogHasMore = true;
+        let pendingSaveTimeout = null;
+        let progressInterval = null;
+        let playerStartTime = null;
+        let authMode = 'login';
 
-window.addEventListener('beforeunload',()=>{
-  if(currentUser&&currentItem&&playerStartTime) saveProgressWithStart(currentItem,currentSeason,currentEpisode,playerStartTime);
-});
-</script>
+        // ─── ROUTING ──────────────────────────────────────────
+        function parseRoute(hash) {
+            if (!hash || hash === '#/' || hash === '#') return { page: 'home', params: {} };
+            const path = hash.replace(/^#\//, '');
+            const segments = path.split('?')[0].split('/');
+            const page = segments[0] || 'home';
+            const params = {};
+            if (page === 'player' && segments.length >= 3) { params.type = segments[1];
+                params.id = segments[2]; } else if (page === 'search') { const usp = new URLSearchParams(path.split('?')[1] ||
+                    '');
+                params.query = usp.get('q') || '';
+                params.type = usp.get('type') || 'multi'; }
+            return { page, params };
+        }
+
+        function buildURL(page, params = {}) {
+            if (page === 'player') return `#/player/${params.type}/${params.id}`;
+            if (page === 'search') return `#/search?q=${encodeURIComponent(params.query||'')}&type=${params.type||searchType}`;
+            return `#/${page}`;
+        }
+
+        function navigateTo(page, params = {}, replace = false) {
+            const url = buildURL(page, params);
+            replace ? window.history.replaceState({ page, params }, '', url) : window.history.pushState({ page, params },
+            '', url);
+            loadPage(page, params);
+        }
+
+        window.addEventListener('popstate', () => {
+            const { page, params } = parseRoute(window.location.hash);
+            loadPage(page, params);
+        });
+
+        function loadPage(page, params = {}) {
+            if (document.querySelector('.page.active')?.id === 'player-page' && page !== 'player') {
+                stopProgressTracking();
+                document.getElementById('player-iframe').src = '';
+            }
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const el = document.getElementById(page + '-page');
+            if (el) el.classList.add('active');
+            const link = document.querySelector(`.nav-link[onclick*="'${page}'"]`);
+            if (link) link.classList.add('active');
+            window.scrollTo(0, 0);
+            switch (page) {
+                case 'home':
+                    loadHome();
+                    break;
+                case 'roulette':
+                    break;
+                case 'search':
+                    searchType = params.type || 'multi';
+                    document.querySelectorAll('#search-page .tab-btn').forEach(t => t.classList.remove('active'));
+                    document.querySelector(`#search-page .tab-btn[onclick*="'${searchType}'"]`)?.classList.add('active');
+                    document.getElementById('search-input').value = params.query || '';
+                    fetchSearchResults(params.query || '');
+                    break;
+                case 'player':
+                    loadPlayerPage(params.type, params.id);
+                    break;
+                case 'watchlist':
+                    loadWatchlistPage();
+                    break;
+                case 'profile':
+                    loadProfilePage();
+                    break;
+                case 'settings':
+                    loadSettingsPage();
+                    break;
+            }
+        }
+
+        // ─── SETTINGS PAGE ─────────────────────────────────────
+        function loadSettingsPage() { updateSettingsUI(); }
+
+        // ─── INIT ──────────────────────────────────────────────
+        async function init() {
+            // detect language from URL path
+            const pathLang = detectLanguageFromPath();
+            const storedLang = localStorage.getItem('cinevault_lang') || 'en';
+            // If path says sr, use it. Otherwise use stored or default to en
+            const lang = pathLang === 'sr' ? 'sr' : (storedLang || 'en');
+            setLanguage(lang, true);
+
+            loadLocalProgressState();
+            loadLocalWatchlistState();
+
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session?.user) {
+                    await onSignIn(session.user);
+                } else {
+                    updateNav();
+                    renderContinueWatching();
+                }
+            } catch (e) {
+                console.warn('Supabase session error:', e);
+                updateNav();
+                renderContinueWatching();
+            }
+
+            const { page, params } = parseRoute(window.location.hash);
+            loadPage(page, params);
+        }
+        init();
+
+        // ─── AUTH ──────────────────────────────────────────────
+        function openModal(mode) {
+            authMode = mode;
+            document.getElementById('auth-modal').classList.remove('hidden');
+            const btn = document.getElementById('btn-login');
+            const switchRow = document.getElementById('modal-switch-row');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            if (mode === 'login') {
+                if (title) title.textContent = t('welcome_back');
+                if (desc) desc.textContent = t('sign_in_desc');
+                if (btn) btn.textContent = t('sign_in');
+                if (switchRow) switchRow.innerHTML =
+                    `New here? <a onclick="openModal('register')" data-i18n="create_account">${t('create_account')}</a>`;
+            } else {
+                if (title) title.textContent = t('create_account');
+                if (desc) desc.textContent = 'Sign up for free to track what you watch.';
+                if (btn) btn.textContent = 'Sign Up';
+                if (switchRow) switchRow.innerHTML =
+                    `Already have an account? <a onclick="openModal('login')" data-i18n="sign_in">${t('sign_in')}</a>`;
+            }
+            document.getElementById('auth-error').textContent = '';
+        }
+
+        function closeModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+        async function submitAuthForm() {
+            const email = document.getElementById('auth-email').value.trim();
+            const pass = document.getElementById('auth-password').value;
+            const err = document.getElementById('auth-error');
+            const btn = document.getElementById('btn-login');
+            if (!email || !pass) { err.textContent = 'Please fill in both fields.'; return; }
+            btn.textContent = 'Loading…';
+            btn.disabled = true;
+            if (authMode === 'login') {
+                const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+                if (error) { err.textContent = error.message;
+                    btn.textContent = t('sign_in');
+                    btn.disabled = false; return; }
+                await onSignIn(data.user);
+                closeModal();
+                toast(t('toast_signed_in'));
+            } else {
+                const { data, error } = await sb.auth.signUp({ email, password: pass });
+                btn.textContent = 'Sign Up';
+                btn.disabled = false;
+                if (error) { err.textContent = error.message; return; }
+                if (data.session) { await onSignIn(data.session.user);
+                    closeModal();
+                    toast(t('toast_account_created')); } else { closeModal();
+                    toast('Check your email to confirm your account.', 'info'); }
+            }
+        }
+
+        // ─── LOCAL STORAGE ────────────────────────────────────
+        function getProgressKey() { return `flickpulse_progress_${currentUser ? currentUser.id : 'guest'}`; }
+
+        function getWatchlistKey() { return `flickpulse_watchlist_${currentUser ? currentUser.id : 'guest'}`; }
+
+        function saveLocalProgressState() { try { localStorage.setItem(getProgressKey(), JSON.stringify(localProgress)); }
+            catch (e) {} }
+
+        function loadLocalProgressState() {
+            try { const r = localStorage.getItem(getProgressKey());
+                localProgress = r ? JSON.parse(r) : {}; } catch (e) { localProgress = {}; }
+        }
+
+        function saveLocalWatchlistState() { try { localStorage.setItem(getWatchlistKey(), JSON.stringify(localWatchlist)); }
+            catch (e) {} }
+
+        function loadLocalWatchlistState() {
+            try { const r = localStorage.getItem(getWatchlistKey());
+                localWatchlist = r ? JSON.parse(r) : []; } catch (e) { localWatchlist = []; }
+        }
+
+        async function migrateGuestToUser(userId) {
+            let gP = {},
+                gW = [];
+            try { const r = localStorage.getItem('flickpulse_progress_guest');
+                if (r) gP = JSON.parse(r); } catch (e) {}
+            try { const r = localStorage.getItem('flickpulse_watchlist_guest');
+                if (r) gW = JSON.parse(r); } catch (e) {}
+            let uP = {},
+                uW = [];
+            try { const r = localStorage.getItem(`flickpulse_progress_${userId}`);
+                if (r) uP = JSON.parse(r); } catch (e) {}
+            try { const r = localStorage.getItem(`flickpulse_watchlist_${userId}`);
+                if (r) uW = JSON.parse(r); } catch (e) {}
+            for (const k in gP) { if (!uP[k] || new Date(gP[k].updated_at) > new Date(uP[k].updated_at)) uP[k] = { ...gP[k],
+                    user_id: userId }; }
+            for (const item of gW) { if (!uW.some(w => String(w.tmdb_id) === String(item.tmdb_id))) uW.push({ ...item,
+                    user_id: userId }); }
+            localStorage.setItem(`flickpulse_progress_${userId}`, JSON.stringify(uP));
+            localStorage.setItem(`flickpulse_watchlist_${userId}`, JSON.stringify(uW));
+            localStorage.removeItem('flickpulse_progress_guest');
+            localStorage.removeItem('flickpulse_watchlist_guest');
+        }
+
+        async function onSignIn(user) {
+            currentUser = { id: user.id, email: user.email, username: user.email.split('@')[0] };
+            await migrateGuestToUser(user.id);
+            loadLocalProgressState();
+            loadLocalWatchlistState();
+            await loadCloudResourcesAndMerge();
+            updateNav();
+            renderContinueWatching();
+        }
+
+        async function loadCloudResourcesAndMerge() {
+            if (!currentUser) return;
+            let prg = [],
+                wl = [];
+            try {
+                const [pRes, wRes] = await Promise.all([
+                    sb.from('progress').select('*').eq('user_id', currentUser.id),
+                    sb.from('watchlist').select('*').eq('user_id', currentUser.id)
+                ]);
+                prg = pRes.data || [];
+                wl = wRes.data || [];
+            } catch (e) { console.warn('Cloud load failed:', e); }
+            const cloudP = {};
+            prg.forEach(r => { cloudP[`${r.media_type}_${r.tmdb_id}`] = r; });
+            for (const key in localProgress) {
+                const local = localProgress[key];
+                if (!local) continue;
+                local.user_id = currentUser.id;
+                const cloud = cloudP[key];
+                if (!cloud || !cloud.updated_at || new Date(local.updated_at) > new Date(cloud.updated_at)) {
+                    cloudP[key] = local;
+                    try {
+                        await sb.from('progress').upsert(buildProgressPayload(local), { onConflict: 'user_id,media_type,tmdb_id' });
+                    } catch (e) {}
+                }
+            }
+            localProgress = cloudP;
+            saveLocalProgressState();
+            for (const item of localWatchlist) {
+                if (!wl.some(w => String(w.tmdb_id) === String(item.tmdb_id))) {
+                    const payload = { user_id: currentUser.id, tmdb_id: String(item.tmdb_id), media_type: item.media_type,
+                        item_data: item.item_data };
+                    try {
+                        const { data } = await sb.from('watchlist').insert(payload).select().single();
+                        if (data) wl.push(data);
+                    } catch (e) {}
+                }
+            }
+            localWatchlist = wl;
+            saveLocalWatchlistState();
+        }
+
+        async function logout() {
+            stopProgressTracking();
+            try { await sb.auth.signOut(); } catch (e) {}
+            currentUser = null;
+            loadLocalProgressState();
+            loadLocalWatchlistState();
+            updateNav();
+            navigateTo('home');
+            toast(t('toast_signed_out'));
+        }
+
+        function updateNav() {
+            const nr = document.getElementById('nav-right');
+            if (currentUser) {
+                const init = currentUser.username[0].toUpperCase();
+                nr.innerHTML = `
+              <button class="lang-btn" id="lang-toggle-btn" onclick="toggleLanguage()">${currentLang === 'sr' ? '🇬🇧 EN' : '🇷🇸 SR'}</button>
+              <div class="avatar" onclick="toggleDeskMenu()">${init}
+                <div class="avatar-menu" id="avatar-menu">
+                  <div class="avatar-item" onclick="navigateTo('profile')">👤 ${t('my_profile')}</div>
+                  <div class="avatar-item" onclick="navigateTo('watchlist')">🔖 ${t('nav_watchlist')}</div>
+                  <div class="avatar-item" onclick="navigateTo('settings')">⚙️ ${t('settings_title').replace(/<[^>]*>/g,'')}</div>
+                  <div class="avatar-item danger" onclick="logout()">🚪 ${t('sign_out')}</div>
+                </div>
+              </div>`;
+            } else {
+                nr.innerHTML = `
+              <button class="lang-btn" id="lang-toggle-btn" onclick="toggleLanguage()">${currentLang === 'sr' ? '🇬🇧 EN' : '🇷🇸 SR'}</button>
+              <button class="btn btn-gold btn-sm" onclick="openModal('login')">${t('sign_in')}</button>`;
+            }
+            updateLangToggle();
+        }
+
+        function toggleDeskMenu() { document.getElementById('avatar-menu')?.classList.toggle('open'); }
+        document.addEventListener('click', e => { if (!e.target.closest('.avatar')) document.getElementById('avatar-menu')
+                ?.classList.remove('open'); });
+
+        // ─── TMDB ──────────────────────────────────────────────
+        async function tmdb(path, params = {}) {
+            const url = new URL(`${TMDB}${path}`);
+            Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+            try {
+                const r = await fetch(url.href, { headers: { 'Authorization': `Bearer ${TMDB_BEARER}` } });
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            } catch (e) { console.warn(`TMDB ${path}:`, e.message); return null; }
+        }
+
+        // ─── CATALOG ──────────────────────────────────────────
+        const MOVIE_P_GENRES = [{ id: 28, name: 'Action' }, { id: 35, name: 'Comedy' }, { id: 18, name: 'Drama' },
+        { id: 27, name: 'Horror' }, { id: 878, name: 'Sci-Fi' }];
+        const TV_P_GENRES = [{ id: 10759, name: 'Action' }, { id: 35, name: 'Comedy' }, { id: 18, name: 'Drama' },
+        { id: 10765, name: 'Sci-Fi' }];
+
+        async function setCatalogType(type) {
+            catalogType = type;
+            ['all', 'movie', 'tv'].forEach(t => document.getElementById(`catalog-btn-${t}`)?.classList.toggle('active', t ===
+                type));
+            renderCatalogGenres();
+            catalogGenre = 0;
+            await fetchCatalogItems(false);
+        }
+
+        function renderCatalogGenres() {
+            const c = document.getElementById('catalog-genres');
+            if (!c) return;
+            const list = catalogType === 'movie' ? MOVIE_P_GENRES : catalogType === 'tv' ? TV_P_GENRES : [{ id: 28,
+                name: t('genre_action') }, { id: 35, name: t('genre_comedy') }, { id: 18, name: t('genre_drama') },
+            { id: 27, name: t('genre_horror') }, { id: 878, name: t('genre_scifi') }];
+            const allLabel = t('all');
+            c.innerHTML =
+                `<span class="genre-pill ${!catalogGenre?'active':''}" onclick="toggleCatalogGenre(0)">${allLabel}</span>` +
+                list.map(g =>
+                    `<span class="genre-pill ${catalogGenre===g.id?'active':''}" onclick="toggleCatalogGenre(${g.id})">${g.name}</span>`
+                    ).join('');
+        }
+
+        async function toggleCatalogGenre(id) { catalogGenre = id;
+            renderCatalogGenres();
+            await fetchCatalogItems(false); }
+
+        async function fetchCatalogItems(append = false) {
+            const loader = document.getElementById('catalog-loader');
+            const grid = document.getElementById('catalog-grid');
+            if (!grid || !loader || catalogLoading) return;
+            if (!append) { catalogPage = 1;
+                catalogHasMore = true;
+                grid.innerHTML = ''; }
+            catalogLoading = true;
+            loader.style.display = 'flex';
+            const params = { sort_by: 'popularity.desc', page: catalogPage };
+            if (catalogGenre > 0) params.with_genres = catalogGenre;
+            try {
+                if (catalogType === 'all') {
+                    const [mD, tvD] = await Promise.all([tmdb('/discover/movie', params), tmdb('/discover/tv', params)]);
+                    let blended = [];
+                    const mR = mD?.results || [],
+                        tvR = tvD?.results || [];
+                    for (let i = 0; i < Math.max(mR.length, tvR.length); i++) {
+                        if (mR[i]) blended.push({ ...mR[i], media_type: 'movie' });
+                        if (tvR[i]) blended.push({ ...tvR[i], media_type: 'tv' });
+                    }
+                    if (!blended.length) { catalogHasMore = false; } else {
+                        const html = blended.slice(0, 18).map(i => generateCardHTML(i, i.media_type)).join('');
+                        append ? grid.insertAdjacentHTML('beforeend', html) : (grid.innerHTML = html);
+                        catalogPage++;
+                    }
+                } else {
+                    const d = await tmdb(`/discover/${catalogType}`, params);
+                    if (d?.results?.length) {
+                        const html = d.results.map(i => generateCardHTML(i, catalogType)).join('');
+                        append ? grid.insertAdjacentHTML('beforeend', html) : (grid.innerHTML = html);
+                        catalogPage++;
+                    } else { catalogHasMore = false; }
+                }
+            } finally { loader.style.display = 'none';
+                catalogLoading = false; }
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!document.getElementById('home-page')?.classList.contains('active')) return;
+            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 600 && catalogHasMore &&
+                !catalogLoading) {
+                fetchCatalogItems(true);
+            }
+        });
+
+        // ─── HOME ──────────────────────────────────────────────
+        async function loadHome() {
+            if (homeLoaded) { renderContinueWatching();
+                setCatalogType(catalogType); return; }
+
+            const featured = await tmdb('/trending/all/week');
+            if (featured?.results?.length) {
+                heroItem = featured.results[0];
+                renderSpotlightHero(heroItem);
+                const pick = featured.results[2] || featured.results[1];
+                if (pick) {
+                    document.getElementById('spotlight-loading').style.display = 'none';
+                    const c = document.getElementById('spotlight-container');
+                    c.style.display = 'flex';
+                    const type = pick.title ? 'movie' : 'tv';
+                    const esc = JSON.stringify({ ...pick, media_type: type }).replace(/"/g, '&quot;');
+                    const poster = pick.backdrop_path ? `${IMG}/w500${pick.backdrop_path}` :
+                    `${IMG}/w300${pick.poster_path}`;
+                    c.innerHTML = `<img class="spotlight-poster" src="${poster}" alt="">
+                <div class="spotlight-info">
+                  <div class="spotlight-title">${pick.title||pick.name}</div>
+                  <div class="spotlight-desc">${pick.overview||'A staff pick for tonight.'}</div>
+                  <button class="btn btn-gold btn-sm" onclick="goToItem(${esc})">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M8 5v14l11-7z"/></svg>
+                    ${t('watch_now')}
+                  </button>
+                </div>`;
+                }
+            }
+
+            const gems = await tmdb('/discover/movie', { 'vote_average.gte': 7.6, 'vote_count.lte': 600, 'vote_count.gte': 60,
+                'sort_by': 'vote_average.desc', 'primary_release_date.gte': '1990-01-01' });
+            document.getElementById('gems-loading').style.display = 'none';
+            if (gems?.results) {
+                let g = gems.results.filter(m => m.popularity < 22);
+                if (g.length < 5) g = gems.results;
+                renderCarouselItems('hidden-gems', g.slice(0, 10), 'movie');
+            }
+
+            await refreshRandomDiscovery();
+
+            const popular = await tmdb('/movie/popular');
+            document.getElementById('popular-loading').style.display = 'none';
+            if (popular) renderCarouselItems('popular-week', popular.results.slice(0, 10), 'movie');
+
+            const recSec = document.getElementById('recommendation-section');
+            const watchedKeys = Object.keys(localProgress);
+            let recID = 27205,
+                recType = 'movie';
+            if (watchedKeys.length) {
+                const last = localProgress[watchedKeys[watchedKeys.length - 1]];
+                if (last?.tmdb_id) { recID = last.tmdb_id;
+                    recType = last.media_type || 'movie'; }
+            }
+            const recs = await tmdb(`/${recType}/${recID}/recommendations`);
+            document.getElementById('rec-loading').style.display = 'none';
+            if (recs?.results?.length) { recSec.style.display = '';
+                renderCarouselItems('because-watched', recs.results.slice(0, 12), recType); } else { recSec.style.display =
+                    'none'; }
+
+            homeLoaded = true;
+            renderContinueWatching();
+            setCatalogType(catalogType);
+        }
+
+        async function refreshRandomDiscovery() {
+            document.getElementById('random-loading').style.display = 'flex';
+            const d = await tmdb('/discover/movie', { page: Math.floor(Math.random() * 20) + 1,
+                sort_by: 'popularity.desc' });
+            document.getElementById('random-loading').style.display = 'none';
+            if (d) renderCarouselItems('random-discovery', d.results.slice(0, 10), 'movie');
+        }
+
+        function renderSpotlightHero(item) {
+            document.getElementById('hero-bg').style.backgroundImage = `url(${IMG}/original${item.backdrop_path})`;
+            document.getElementById('hero-title').textContent = item.title || item.name;
+            document.getElementById('hero-desc').textContent = item.overview || '';
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            document.getElementById('hero-meta').innerHTML = `
+            <span style="color:var(--gold);display:inline-flex;align-items:center;gap:4px;">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              ${item.vote_average?.toFixed(1)||'7.5'}
+            </span>
+            <span>•</span><span>${year}</span><span>•</span>
+            <span class="badge badge-gold">${item.title?'MOVIE':'SERIES'}</span>`;
+        }
+
+        function playHeroItem() { if (heroItem) goToItem({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' }); }
+
+        function viewHeroDetails() { if (heroItem) goToItem({ ...heroItem, media_type: heroItem.title ? 'movie' : 'tv' }); }
+
+        function renderCarouselItems(id, items, defaultType) {
+            const c = document.getElementById(id);
+            if (!c) return;
+            c.innerHTML = items.map(i => generateCardHTML(i, i.media_type || defaultType)).join('');
+        }
+
+        function isFavorited(id) { return localWatchlist.some(x => String(x.tmdb_id) === String(id)); }
+
+        function generateCardHTML(item, type) {
+            const title = item.title || item.name;
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            const poster = item.poster_path ? `${IMG}/w300${item.poster_path}` :
+                'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="100%25" height="100%25" fill="%23161C36"/%3E%3C/svg%3E';
+            const esc = JSON.stringify({ ...item, media_type: type }).replace(/"/g, '&quot;');
+            const inWatchlist = isFavorited(item.id);
+
+            return `<div class="card" onclick="goToItem(${esc})">
+            <div class="card-img-wrapper">
+              <img class="card-img" src="${poster}" alt="${title}" loading="lazy">
+              <button class="watchlist-btn ${inWatchlist ? 'added' : ''}" 
+                      onclick="event.stopPropagation(); toggleWatchlistFromCard(${esc}, this)" 
+                      title="${inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}">
+                ${inWatchlist ? '✓' : '+'}
+              </button>
+            </div>
+            <div class="card-info">
+              <div class="card-title">${title}</div>
+              <div class="card-meta"><span>${year}</span><span class="card-rating">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                ${item.vote_average?.toFixed(1)||'N/A'}</span></div>
+            </div>
+          </div>`;
+        }
+
+        function toggleWatchlistFromCard(item, btn) {
+            toggleWatchlist(item, btn);
+            const isNowIn = isFavorited(item.id);
+            btn.textContent = isNowIn ? '✓' : '+';
+            btn.classList.toggle('added', isNowIn);
+            btn.title = isNowIn ? 'Remove from watchlist' : 'Add to watchlist';
+        }
+
+        // ─── CONTINUE WATCHING ────────────────────────────────
+        function renderContinueWatching() {
+            const container = document.getElementById('continue-carousel');
+            const section = document.getElementById('continue-section');
+
+            if (!settings.showContinueWatching || !settings.progressTracking) {
+                section.style.display = 'none';
+                return;
+            }
+
+            const records = Object.values(localProgress).filter(r => r.progress_pct > 0 && r.progress_pct < 100).sort((a,
+                b) => new Date(b.updated_at) - new Date(a.updated_at));
+            if (!records.length) { section.style.display = 'none'; return; }
+            section.style.display = '';
+            container.innerHTML = records.map(r => {
+                const item = r.item_data;
+                const title = item.title || item.name;
+                const banner = item.backdrop_path ? `${IMG}/w500${item.backdrop_path}` : (item.poster_path ?
+                    `${IMG}/w500${item.poster_path}` :
+                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="500" height="280"%3E%3Crect width="100%25" height="100%25" fill="%23161C36"/%3E%3C/svg%3E');
+                const label = r.media_type === 'tv' ? `S${r.season} E${r.episode}` : 'Movie';
+                const pct = Math.min(100, Math.max(1, Math.round(Number(r.progress_pct || 0))));
+                const key = `${r.media_type}_${r.tmdb_id}`;
+                const esc = JSON.stringify({ ...item, media_type: r.media_type }).replace(/"/g, '&quot;');
+                const progressBar = settings.progressTracking ?
+                    `<div class="continue-bar"><div class="continue-fill" style="width:${pct}%;"></div></div>` :
+                    '';
+                return `<div class="continue-card">
+              <img class="continue-img" src="${banner}" alt="${title}">
+              <button class="continue-remove" onclick="removeProgressRecord(event,'${key}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+              <div class="continue-info" onclick="goToItem(${esc})">
+                <div class="continue-title">${title}</div>
+                <div class="continue-sub">${label} ${settings.progressTracking ? `· ${pct}%` : ''}</div>
+                ${progressBar}
+              </div>
+            </div>`;
+            }).join('');
+        }
+
+        async function removeProgressRecord(e, key) {
+            e.stopPropagation();
+            const r = localProgress[key];
+            if (!r) return;
+            delete localProgress[key];
+            saveLocalProgressState();
+            renderContinueWatching();
+            if (currentUser) {
+                try { await sb.from('progress').delete().eq('user_id', currentUser.id).eq('media_type', r.media_type).eq(
+                        'tmdb_id', String(r.tmdb_id)); } catch (e) {}
+            }
+            toast(t('toast_removed_history'));
+        }
+
+        // ─── SEARCH ────────────────────────────────────────────
+        function handleSearch(val) {
+            clearTimeout(searchTimeout);
+            if (!val.trim()) return;
+            searchTimeout = setTimeout(() => navigateTo('search', { query: val.trim(), type: searchType }), 400);
+        }
+
+        function doSearch() { const q = document.getElementById('search-input').value.trim(); if (q) navigateTo('search',
+            { query: q, type: searchType }); }
+
+        async function fetchSearchResults(query) {
+            if (!query) return;
+            document.getElementById('search-results').innerHTML = '';
+            document.getElementById('search-loader').style.display = 'flex';
+            const d = await tmdb(`/search/${searchType}`, { query, include_adult: false });
+            document.getElementById('search-loader').style.display = 'none';
+            document.getElementById('search-meta').textContent =
+                `${d?.total_results||0} results for "${query}"`;
+            if (d?.results) {
+                document.getElementById('search-results').innerHTML = d.results.filter(x => x.poster_path).map(item => {
+                    const type = item.media_type || (searchType === 'multi' ? (item.title ? 'movie' : 'tv') :
+                    searchType);
+                    return generateCardHTML(item, type);
+                }).join('');
+            }
+        }
+
+        function setSearchType(type) {
+            searchType = type;
+            document.querySelectorAll('#search-page .tab-btn').forEach(b => b.classList.toggle('active', b.textContent
+                .trim().toLowerCase().includes(type === 'tv' ? 'series' : type)));
+            doSearch();
+        }
+
+        // ─── ROULETTE ──────────────────────────────────────────
+        async function spinRoulette() {
+            const media = document.getElementById('roulette-media').value;
+            const genre = document.getElementById('roulette-genre').value;
+            const year = document.getElementById('roulette-year').value.trim();
+            const btn = document.getElementById('spin-button');
+            const ldr = document.getElementById('roulette-loader');
+            const card = document.getElementById('roulette-result-card');
+
+            btn.disabled = true;
+            btn.textContent = 'Finding something…';
+            ldr.style.display = 'flex';
+            card.classList.remove('active');
+
+            let targetType = media === 'both' ? (Math.random() < .5 ? 'movie' : 'tv') : media;
+
+            const sorts = ['popularity.desc', 'vote_average.desc', 'revenue.desc', 'primary_release_date.desc',
+                'vote_count.desc'
+            ];
+            const params = { 'vote_count.gte': Math.floor(Math.random() * 40) + 10,
+                sort_by: sorts[Math.floor(Math.random() * sorts.length)] };
+
+            let adjustedGenre = genre;
+            if (targetType === 'tv') { if (genre === '28') adjustedGenre = '10759'; if (genre === '878') adjustedGenre =
+                    '10765'; }
+            if (adjustedGenre !== 'any') params.with_genres = adjustedGenre;
+            if (year) { if (targetType === 'movie') params.primary_release_year = year;
+                else params.first_air_date_year = year; }
+
+            const indexSet = await tmdb(`/discover/${targetType}`, params);
+            if (!indexSet?.results?.length) {
+                btn.disabled = false;
+                btn.textContent = '🎲 Spin & Discover';
+                ldr.style.display = 'none';
+                toast(t('toast_no_results'), 'error');
+                return;
+            }
+
+            const randMax = Math.min(indexSet.total_pages, 120);
+            const randPage = Math.floor(Math.random() * randMax) + 1;
+            const fullSet = await tmdb(`/discover/${targetType}`, { ...params, page: randPage });
+            const options = fullSet?.results || indexSet.results;
+            const finalItem = options[Math.floor(Math.random() * options.length)] || indexSet.results[0];
+
+            ldr.style.display = 'none';
+            card.style.display = 'flex';
+            card.classList.add('active');
+
+            const sample = options.slice(0, 12);
+            let count = 0;
+            const interval = setInterval(() => {
+                const t = sample[Math.floor(Math.random() * sample.length)] || finalItem;
+                const tp = t.poster_path ? `${IMG}/w300${t.poster_path}` :
+                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="100%25" height="100%25" fill="%23161C36"/%3E%3C/svg%3E';
+                card.innerHTML =
+                    `<img class="result-poster spin-roll" src="${tp}" alt="" style="filter:blur(2px);"><div class="result-info" style="opacity:.6;"><h2 class="result-title">${t.title||t.name}</h2><div class="result-meta" style="color:var(--gold);">Picking…</div></div>`;
+                if (++count >= 15) { clearInterval(interval);
+                    revealWinner(); }
+            }, 100);
+
+            function revealWinner() {
+                btn.disabled = false;
+                btn.textContent = '🎲 Spin & Discover';
+                const title = finalItem.title || finalItem.name;
+                const year2 = (finalItem.release_date || finalItem.first_air_date || '').split('-')[0];
+                const poster = finalItem.poster_path ? `${IMG}/w300${finalItem.poster_path}` :
+                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450"%3E%3Crect width="100%25" height="100%25" fill="%23161C36"/%3E%3C/svg%3E';
+                const esc = JSON.stringify({ ...finalItem, media_type: targetType }).replace(/"/g, '&quot;');
+                card.innerHTML = `
+              <img class="result-poster reveal-scale" src="${poster}" alt="${title}">
+              <div class="result-info">
+                <h2 class="result-title">${title}</h2>
+                <div class="result-meta">
+                  <span style="color:var(--gold);display:inline-flex;align-items:center;gap:4px;">
+                    <svg viewBox="0 0 24 24" fill="currentColor" style="width:11px;height:11px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    ${finalItem.vote_average?.toFixed(1)||'N/A'}
+                  </span>
+                  <span>•</span><span>${year2}</span><span>•</span>
+                  <span class="badge badge-gold">${targetType==='movie'?'MOVIE':'SERIES'}</span>
+                </div>
+                <p class="result-desc">${finalItem.overview||'No description available.'}</p>
+                <div class="result-actions">
+                  <button class="btn btn-gold" onclick="goToItem(${esc})">${t('watch_now')}</button>
+                  <button class="btn btn-outline" onclick="toggleWatchlistFromCard(${esc}, this)">+ ${t('nav_watchlist')}</button>
+                </div>
+              </div>`;
+                toast(t('toast_heres_pick'));
+            }
+        }
+
+        // ─── PLAYER ────────────────────────────────────────────
+        async function loadPlayerPage(type, id) {
+            document.getElementById('video-loader').style.display = 'flex';
+            const info = await tmdb(`/${type === 'movie' ? 'movie' : 'tv'}/${id}`);
+            if (!info) { toast(t('toast_could_not_load'), 'error'); return; }
+
+            currentItem = { ...info, media_type: type };
+            const title = info.title || info.name;
+            document.getElementById('player-heading').textContent = title;
+            document.getElementById('player-title').textContent = title;
+            document.getElementById('player-overview').textContent = info.overview || 'No description available.';
+
+            const year = (info.release_date || info.first_air_date || '').split('-')[0];
+            document.getElementById('player-meta').innerHTML = `
+            <span class="badge badge-gold">⭐ ${info.vote_average?.toFixed(1) || 'N/A'}</span>
+            <span class="badge">${year}</span>
+            ${type === 'movie' && info.runtime ? `<span class="badge">${info.runtime} min</span>` : ''}`;
+
+            if (type === 'tv') {
+                currentSeason = 1;
+                currentEpisode = 1;
+                await populateSeasons(info);
+                document.getElementById('episodes-panel').style.display = 'block';
+                mountStreamingSources(type, id, currentSeason, currentEpisode);
+            } else {
+                currentSeason = 1;
+                currentEpisode = 1;
+                document.getElementById('episodes-panel').style.display = 'none';
+                mountStreamingSources(type, id, 1, 1);
+            }
+
+            const saved = getProgress(currentItem, type);
+            if (saved) toast(t('toast_picked_up', { pct: Math.round(saved.progress) }), 'info');
+
+            if (settings.progressTracking) {
+                startProgressTracking(currentItem, currentSeason, currentEpisode);
+            }
+        }
+
+        function mountStreamingSources(type, id, s, e) {
+            const box = document.getElementById('source-buttons');
+            const defaultIdx = settings.defaultSource || 0;
+            box.innerHTML = SOURCES.map((src, i) =>
+                `<button class="source-btn ${i === defaultIdx ? 'active' : ''}" onclick="firePlayerSource(${i},'${type}',${id},${s},${e})">${src.name}</button>`
+                ).join('');
+            firePlayerSource(defaultIdx, type, id, s, e);
+        }
+
+        function firePlayerSource(idx, type, id, s, e) {
+            document.querySelectorAll('.source-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+            const src = SOURCES[idx];
+            const url = type === 'movie' ? src.movie(id) : src.tv(id, s, e);
+            const iframe = document.getElementById('player-iframe');
+            iframe.src = url;
+            document.getElementById('player-subheading').textContent = `Source: ${src.name}`;
+            setTimeout(() => document.getElementById('video-loader').style.display = 'none', 800);
+            iframe.onload = () => document.getElementById('video-loader').style.display = 'none';
+        }
+
+        async function populateSeasons(info) {
+            const dropdown = document.getElementById('season-select-dropdown');
+            let seasons = (info.seasons || []).filter(s => s.season_number > 0);
+            if (!seasons.length && info.seasons?.length) seasons = [info.seasons[0]];
+            if (dropdown) {
+                dropdown.innerHTML = seasons.map(s =>
+                        `<option value="${s.season_number}" ${Number(currentSeason) === s.season_number ? 'selected' : ''}>${s.name || 'Season ' + s.season_number}</option>`
+                        ).join('');
+                dropdown.onchange = e => switchPlayerSeason(Number(e.target.value), info.id);
+            }
+            if (!seasons.some(s => s.season_number === currentSeason) && seasons.length) {
+                currentSeason = seasons[0].season_number;
+                if (dropdown) dropdown.value = currentSeason;
+            }
+            await loadSeasonEpisodes(info.id, currentSeason);
+        }
+
+        async function switchPlayerSeason(s, id) {
+            stopProgressTracking();
+            currentSeason = s;
+            currentEpisode = 1;
+            const dd = document.getElementById('season-select-dropdown');
+            if (dd) dd.value = s;
+            await loadSeasonEpisodes(id, s);
+            if (settings.progressTracking) startProgressTracking(currentItem, currentSeason, currentEpisode);
+        }
+
+        async function loadSeasonEpisodes(id, s) {
+            const info = await tmdb(`/tv/${id}/season/${s}`);
+            const list = document.getElementById('ep-list');
+            const badge = document.getElementById('episodes-count-badge');
+            const eps = info?.episodes || [];
+            if (badge) badge.textContent = `${eps.length} episodes`;
+            if (list) {
+                list.innerHTML = eps.map(ep => {
+                    const pad = String(ep.episode_number).padStart(2, '0');
+                    const active = Number(currentEpisode) === Number(ep.episode_number);
+                    return `<div class="ep-row ${active ? 'active' : ''}" id="ep-item-${ep.episode_number}" onclick="triggerEpisodeSelect(${ep.episode_number},${id})">
+                <span class="ep-num">EP ${pad}</span>
+                <span class="ep-name" title="${ep.name || ''}">${ep.name || 'Episode ' + ep.episode_number}</span>
+                <div class="ep-play-indicator"><svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+              </div>`;
+                }).join('');
+            }
+            mountStreamingSources('tv', id, s, currentEpisode);
+        }
+
+        function triggerEpisodeSelect(ep, id) {
+            stopProgressTracking();
+            currentEpisode = ep;
+            document.querySelectorAll('.ep-row').forEach(r => r.classList.remove('active'));
+            document.getElementById(`ep-item-${ep}`)?.classList.add('active');
+            mountStreamingSources('tv', id, currentSeason, ep);
+            if (settings.progressTracking) startProgressTracking(currentItem, currentSeason, currentEpisode);
+        }
+
+        // ─── PROGRESS TRACKING ──────────────────────────────────
+        function buildProgressPayload(data) {
+            return {
+                user_id: String(data.user_id || (currentUser?.id ?? 'guest')),
+                media_type: String(data.media_type || 'movie'),
+                tmdb_id: String(data.tmdb_id || data.item_data?.id),
+                item_data: data.item_data,
+                season: Number(data.season || 1),
+                episode: Number(data.episode || 1),
+                progress_pct: Number(parseFloat(data.progress_pct || 0).toFixed(4)),
+                updated_at: data.updated_at || new Date().toISOString()
+            };
+        }
+
+        function showSaveStatus(state, msg) {
+            if (state === 'error') { console.warn('Progress save error (silenced):', msg); return; }
+            const el = document.getElementById('save-status');
+            const txt = document.getElementById('save-status-text');
+            el.className = `visible ${state}`;
+            txt.textContent = msg;
+            if (state === 'saved') setTimeout(() => { el.className = ''; }, 2000);
+        }
+
+        async function persistProgressToSupabase(payload) {
+            if (!currentUser || currentUser.id === 'guest') return;
+            showSaveStatus('saving', 'Saving progress…');
+            try {
+                const { error } = await sb.from('progress').upsert(buildProgressPayload(payload), {
+                    onConflict: 'user_id,media_type,tmdb_id'
+                });
+                if (error) { console.warn('Progress upsert error:', error); } else { showSaveStatus('saved', t(
+                        'toast_progress_saved')); }
+            } catch (e) { console.warn('Progress upsert exception:', e); }
+        }
+
+        function startProgressTracking(item, s, ep) {
+            if (!settings.progressTracking) return;
+            stopProgressTracking();
+            playerStartTime = Date.now();
+            progressInterval = setInterval(() => savePlaybackLocation(item, s, ep), 15 * 1000);
+        }
+
+        function stopProgressTracking() {
+            if (progressInterval) { clearInterval(progressInterval);
+                progressInterval = null; }
+            if (currentItem && playerStartTime && settings.progressTracking) {
+                const snap = playerStartTime;
+                playerStartTime = null;
+                flushPlaybackSave(currentItem, currentSeason, currentEpisode, snap);
+            } else { playerStartTime = null; }
+        }
+
+        async function flushPlaybackSave(item, s, ep, snapshot) {
+            if (!item || !snapshot || !settings.progressTracking) return;
+            const key = `${item.media_type || 'movie'}_${item.id}`;
+            const exist = localProgress[key];
+            const delta = Math.max(0, Date.now() - snapshot);
+            const runtimeMin = item.runtime || (item.episode_run_time?.[0]) || (item.media_type === 'movie' ? 110 : 45);
+            const addPct = (delta / (runtimeMin * 60 * 1000)) * 100;
+            const newPct = Math.min((Number(exist?.progress_pct) || 0) + addPct, 99.9);
+
+            const payload = {
+                user_id: currentUser?.id || 'guest',
+                media_type: item.media_type || 'movie',
+                tmdb_id: String(item.id),
+                item_data: item,
+                season: Number(s),
+                episode: Number(ep),
+                progress_pct: newPct,
+                updated_at: new Date().toISOString()
+            };
+
+            localProgress[key] = payload;
+            saveLocalProgressState();
+            renderContinueWatching();
+
+            clearTimeout(pendingSaveTimeout);
+            pendingSaveTimeout = setTimeout(() => persistProgressToSupabase(payload), 800);
+        }
+
+        async function savePlaybackLocation(item, s, ep) {
+            if (!item || !playerStartTime || !settings.progressTracking) return;
+            const snap = playerStartTime;
+            playerStartTime = Date.now();
+            await flushPlaybackSave(item, s, ep, snap);
+        }
+
+        function getProgress(item, type) {
+            if (!item) return null;
+            const rec = localProgress[`${type || 'movie'}_${item.id}`];
+            if (!rec) return null;
+            return { progress: rec.progress_pct, season: rec.season, episode: rec.episode };
+        }
+
+        // ─── WATCHLIST ─────────────────────────────────────────
+        async function toggleWatchlist(item, btn) {
+            const type = item.media_type || (item.title ? 'movie' : 'tv');
+            const idx = localWatchlist.findIndex(x => String(x.tmdb_id) === String(item.id));
+            if (idx > -1) {
+                const entry = localWatchlist[idx];
+                localWatchlist.splice(idx, 1);
+                saveLocalWatchlistState();
+                toast(t('toast_removed_watchlist'));
+                const uid = currentUser?.id || 'guest';
+                try {
+                    if (entry.id && !String(entry.id).startsWith('guest_'))
+                        await sb.from('watchlist').delete().eq('id', entry.id);
+                    else
+                        await sb.from('watchlist').delete().eq('user_id', uid).eq('tmdb_id', String(item.id));
+                } catch (e) {}
+            } else {
+                const payload = { user_id: currentUser?.id || 'guest', tmdb_id: String(item.id), media_type: type,
+                    item_data: item };
+                toast(t('toast_added_watchlist'));
+                const tempId = 'guest_' + Math.random().toString(36).substring(2, 12);
+                localWatchlist.push({ ...payload, id: tempId });
+                saveLocalWatchlistState();
+                try {
+                    const { data, error } = await sb.from('watchlist').insert({ user_id: payload.user_id,
+                        tmdb_id: payload.tmdb_id, media_type: payload.media_type,
+                        item_data: payload.item_data }).select().single();
+                    if (data) {
+                        const i = localWatchlist.findIndex(x => x.id === tempId);
+                        if (i > -1) { localWatchlist[i] = data;
+                            saveLocalWatchlistState(); }
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function loadWatchlistPage() {
+            const c = document.getElementById('watchlist-grid');
+            if (!localWatchlist.length) {
+                c.innerHTML =
+                    `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🔖</div><div class="empty-title">${t('my_watchlist').replace(/<[^>]*>/g,'')}</div><div class="empty-desc">Browse titles and click <strong>+ Watchlist</strong> to save them here.</div></div>`;
+                return;
+            }
+            c.innerHTML = localWatchlist.map(w => generateCardHTML(w.item_data, w.media_type)).join('');
+        }
+
+        // ─── PROFILE ───────────────────────────────────────────
+        function loadProfilePage() {
+            document.getElementById('prof-avatar').textContent = currentUser ? currentUser.username[0].toUpperCase() : '?';
+            document.getElementById('prof-username').textContent = currentUser ? currentUser.username : 'Guest';
+            document.getElementById('prof-email').textContent = currentUser ? currentUser.email : 'Not signed in';
+            const progCount = Object.keys(localProgress).length;
+            const watchingLabel = t('continue_watching').replace(/<[^>]*>/g, '').trim();
+            const watchlistedLabel = t('nav_watchlist');
+            document.getElementById('prof-stats').innerHTML = `
+            <div class="stat-box"><div class="stat-val">${progCount}</div><div class="stat-lbl">${watchingLabel}</div></div>
+            <div class="stat-box"><div class="stat-val">${localWatchlist.length}</div><div class="stat-lbl">${watchlistedLabel}</div></div>`;
+            const curables = Object.values(localProgress).filter(r => r.progress_pct > 0 && r.progress_pct < 95).sort((a,
+                b) => new Date(b.updated_at) - new Date(a.updated_at));
+            document.getElementById('profile-continue').innerHTML = curables.length ? curables.map(r => generateCardHTML(r
+                .item_data, r.media_type)).join('') :
+                `<div class="empty-state">${t('keep_watching').replace(/<[^>]*>/g,'')}</div>`;
+        }
+
+        function goToItem(item) {
+            const type = item.media_type || (item.title ? 'movie' : 'tv');
+            navigateTo('player', { type, id: item.id });
+        }
+
+        // ─── TOAST ─────────────────────────────────────────────
+        function toast(msg, type = 'success') {
+            const icons = {
+                success: `<svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+                info: `<svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+                error: `<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+            };
+            document.getElementById('toast-icon').innerHTML = icons[type] || icons.success;
+            document.getElementById('toast-msg').textContent = msg;
+            const bar = document.getElementById('toast');
+            bar.classList.add('show');
+            setTimeout(() => bar.classList.remove('show'), 2800);
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (currentItem && playerStartTime && settings.progressTracking) {
+                flushPlaybackSave(currentItem, currentSeason, currentEpisode, playerStartTime);
+            }
+        });
+
+        // ─── RE-APPLY TRANSLATIONS ON LOAD ─────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTranslations();
+            updateLangToggle();
+        });
+    </script>
 </body>
 </html>
