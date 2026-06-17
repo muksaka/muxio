@@ -2179,7 +2179,7 @@
                 stream_source: 'Stream source:',
                 episodes: 'Episodes',
                 finding_stream: 'Finding the best stream…',
-                settings_title: '<span>Settings</span>',
+                settings_title: '⚙️ <span>Settings</span>',
                 settings_desc: 'Customize your CineVault experience.',
                 playback_tracking: 'Playback & Tracking',
                 progress_tracking: 'Progress Tracking',
@@ -2774,38 +2774,37 @@
         }
 
         async function persistProgressToSupabase(payload) {
-    if (!currentUser || currentUser.id === 'guest') {
-        showSaveStatus('saved', t('toast_saved'));
-        return;
-    }
-    
-    showSaveStatus('saving', 'Saving…');
-    
-    try {
-        // Add a timeout to prevent hanging
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const { error } = await sb.from('progress').upsert(
-            buildProgressPayload(payload), 
-            { onConflict: 'user_id,media_type,tmdb_id' }
-        );
-        
-        clearTimeout(timeoutId);
-        
-        if (error) {
-            console.warn('Supabase upsert error:', error);
-            // Still show saved locally even if cloud fails
-            showSaveStatus('saved', t('toast_saved'));
-        } else {
-            showSaveStatus('saved', t('toast_progress_saved'));
+            if (!currentUser || currentUser.id === 'guest') {
+                showSaveStatus('saved', t('toast_saved'));
+                return;
+            }
+
+            showSaveStatus('saving', 'Saving…');
+
+            try {
+                // Add a timeout to prevent hanging
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const { error } = await sb.from('progress').upsert(
+                    buildProgressPayload(payload), { onConflict: 'user_id,media_type,tmdb_id' }
+                );
+
+                clearTimeout(timeoutId);
+
+                if (error) {
+                    console.warn('Supabase upsert error:', error);
+                    // Still show saved locally even if cloud fails
+                    showSaveStatus('saved', t('toast_saved'));
+                } else {
+                    showSaveStatus('saved', t('toast_progress_saved'));
+                }
+            } catch (e) {
+                console.warn('Supabase exception:', e);
+                // Show saved anyway - local storage already has the data
+                showSaveStatus('saved', t('toast_saved'));
+            }
         }
-    } catch (e) {
-        console.warn('Supabase exception:', e);
-        // Show saved anyway - local storage already has the data
-        showSaveStatus('saved', t('toast_saved'));
-    }
-}
 
         function showSaveStatus(state, msg) {
             if (state === 'error') { console.warn('Progress save error (silenced)'); return; }
@@ -3039,6 +3038,12 @@
         });
 
         // ─── HOME ──────────────────────────────────────────────
+        // ─── Get today's date as a seed for daily changes ─────
+        function getTodaySeed() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        }
+
         async function loadHome() {
             if (homeLoaded) { renderContinueWatching();
                 setCatalogType(catalogType); return; }
@@ -3068,15 +3073,52 @@
                 }
             }
 
-            const gems = await tmdb('/discover/movie', { 'vote_average.gte': 7.6, 'vote_count.lte': 600, 'vote_count.gte': 60,
-                'sort_by': 'vote_average.desc', 'primary_release_date.gte': '1990-01-01' });
-            document.getElementById('gems-loading').style.display = 'none';
-            if (gems?.results) {
-                let g = gems.results.filter(m => m.popularity < 22);
-                if (g.length < 5) g = gems.results;
-                renderCarouselItems('hidden-gems', g.slice(0, 10), 'movie');
+            // ─── HIDDEN GEMS: changes daily using a seed ───
+            const todaySeed = getTodaySeed();
+            const gemsCacheKey = `cinevault_gems_${todaySeed}`;
+            let cachedGems = localStorage.getItem(gemsCacheKey);
+
+            if (cachedGems) {
+                try {
+                    const parsed = JSON.parse(cachedGems);
+                    document.getElementById('gems-loading').style.display = 'none';
+                    renderCarouselItems('hidden-gems', parsed, 'movie');
+                } catch (e) {
+                    cachedGems = null;
+                }
             }
 
+            if (!cachedGems) {
+                const gems = await tmdb('/discover/movie', {
+                    'vote_average.gte': 7.2,
+                    'vote_count.gte': 50,
+                    'vote_count.lte': 800,
+                    'sort_by': 'popularity.desc',
+                    'primary_release_date.gte': '1990-01-01'
+                });
+                document.getElementById('gems-loading').style.display = 'none';
+                if (gems?.results) {
+                    // Use deterministic shuffle based on today's date
+                    const shuffled = [...gems.results];
+                    const seed = todaySeed.split('-').join('');
+                    let hash = 0;
+                    for (let i = 0; i < seed.length; i++) {
+                        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+                        hash = hash & hash;
+                    }
+                    // Fisher-Yates with seeded randomness
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.abs((hash + i * 137) % (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                        hash = (hash * 31 + i) & 0xFFFFFFFF;
+                    }
+                    const selected = shuffled.slice(0, 12);
+                    localStorage.setItem(gemsCacheKey, JSON.stringify(selected));
+                    renderCarouselItems('hidden-gems', selected, 'movie');
+                }
+            }
+
+            // ─── RANDOM DISCOVERY: changes on every page load ───
             await refreshRandomDiscovery();
 
             const popular = await tmdb('/movie/popular');
@@ -3105,8 +3147,8 @@
 
         async function refreshRandomDiscovery() {
             document.getElementById('random-loading').style.display = 'flex';
-            const d = await tmdb('/discover/movie', { page: Math.floor(Math.random() * 20) + 1,
-                sort_by: 'popularity.desc' });
+            const randomPage = Math.floor(Math.random() * 30) + 1;
+            const d = await tmdb('/discover/movie', { page: randomPage, sort_by: 'popularity.desc' });
             document.getElementById('random-loading').style.display = 'none';
             if (d) renderCarouselItems('random-discovery', d.results.slice(0, 10), 'movie');
         }
