@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CineVault — Cinema</title>
+    <title>Muxia</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 680 680'%3E%3Crect width='680' height='680' rx='120' fill='%2308091A'/%3E%3Cpolygon points='110,168 68,168 340,512 502,512' fill='%23E8EAFF'/%3E%3Ccircle cx='340' cy='370' r='105' fill='%23F5A623' opacity='0.12'/%3E%3Cpolygon points='304,316 304,424 406,370' fill='%23F5A623'/%3E%3C/svg%3E" />
     <style>
@@ -1756,7 +1756,7 @@
 
     <!-- ===== NAV ===== -->
     <nav id="nav">
-        <a class="logo" href="#/home" id="logo-link"><span id="logo-brand">Cine</span>Vault</a>
+        <a class="logo" href="#/home" id="logo-link"><span id="logo-brand">Mux</span>ia</a>
         <div class="nav-links">
             <button class="nav-link active" data-i18n="nav_home" onclick="navigateTo('home')">Home</button>
             <button class="nav-link nav-roulette-btn" data-i18n="nav_roulette" onclick="navigateTo('roulette')">🎲 Roulette</button>
@@ -1990,7 +1990,7 @@
     <div id="settings-page" class="page">
         <div class="settings-container">
             <div class="section-header" style="margin-bottom:8px;">
-                <div class="section-title" data-i18n="settings_title">⚙️ <span>Settings</span></div>
+                <div class="section-title" data-i18n="settings_title"><span>Settings</span></div>
             </div>
             <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" data-i18n="settings_desc">Customize your CineVault experience.</p>
 
@@ -2179,7 +2179,7 @@
                 stream_source: 'Stream source:',
                 episodes: 'Episodes',
                 finding_stream: 'Finding the best stream…',
-                settings_title: '⚙️ <span>Settings</span>',
+                settings_title: ' <span>Settings</span>',
                 settings_desc: 'Customize your CineVault experience.',
                 playback_tracking: 'Playback & Tracking',
                 progress_tracking: 'Progress Tracking',
@@ -2270,7 +2270,7 @@
                 stream_source: 'Izvor strima:',
                 episodes: 'Epizode',
                 finding_stream: 'Tražimo najbolji strim…',
-                settings_title: '⚙️ <span>Podešavanja</span>',
+                settings_title: ' <span>Podešavanja</span>',
                 settings_desc: 'Prilagodite svoje CineVault iskustvo.',
                 playback_tracking: 'Reprodukcija i praćenje',
                 progress_tracking: 'Praćenje napretka',
@@ -2373,7 +2373,7 @@
             }
             const logoBrand = document.getElementById('logo-brand');
             if (logoBrand) {
-                logoBrand.textContent = currentLang === 'sr' ? 'Bio' : 'Cine';
+                logoBrand.textContent = currentLang === 'sr' ? 'Muks' : 'Mux';
             }
             updateModalTexts();
             renderCatalogGenres();
