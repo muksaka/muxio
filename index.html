@@ -2124,22 +2124,21 @@
 
         // ─── SOURCES ──────────────────────────────────────────
         const SOURCES = [
-    
-    { name: 'VidCore', movie: id => `https://vidcore.net/movie/${id}`, tv: (id, s, e) =>
-            `https://vidcore.net/tv/${id}/${s}/${e}` },
-			{ 
-        name: 'VidLink', 
-        movie: id => `https://vidlink.pro/movie/${id}`, 
-        tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}`,
-        anime: (id, ep, type = 'sub') => `https://vidlink.pro/anime/${id}/${ep}/${type}?fallback=true` 
-    },
-    { name: 'VidKing', movie: id => `https://www.vidking.net/embed/movie/${id}?color=F5A623`, tv: (id, s, e) =>
-            `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=F5A623` },
-    { name: 'VidSrc', movie: id => `https://vidsrc.to/embed/movie/${id}`, tv: (id, s, e) =>
-            `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
-    { name: '2Embed', movie: id => `https://www.2embed.cc/embed/${id}`, tv: (id, s, e) =>
-            `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
-];
+            // ★ VidCore now routed through our reverse proxy to strip popups
+            { name: 'VidCore', movie: id => `/api/proxy/movie/${id}`, tv: (id, s, e) => `/api/proxy/tv/${id}/${s}/${e}` },
+            { 
+                name: 'VidLink', 
+                movie: id => `https://vidlink.pro/movie/${id}`, 
+                tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}`,
+                anime: (id, ep, type = 'sub') => `https://vidlink.pro/anime/${id}/${ep}/${type}?fallback=true` 
+            },
+            { name: 'VidKing', movie: id => `https://www.vidking.net/embed/movie/${id}?color=F5A623`, tv: (id, s, e) =>
+                    `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=F5A623` },
+            { name: 'VidSrc', movie: id => `https://vidsrc.to/embed/movie/${id}`, tv: (id, s, e) =>
+                    `https://vidsrc.to/embed/tv/${id}/${s}/${e}` },
+            { name: '2Embed', movie: id => `https://www.2embed.cc/embed/${id}`, tv: (id, s, e) =>
+                    `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` }
+        ];
 
         // ─── TRANSLATIONS ──────────────────────────────────────
         const LANG = {
